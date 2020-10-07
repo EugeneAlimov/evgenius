@@ -15,7 +15,17 @@
             success: function(data){
             console.log(data)
             }
-            error: alert('Произошла ошибка :(Обновите страницу и попробуйте снова.')
+//            error: alert('Произошла ошибка :(Обновите страницу и попробуйте снова.')
         })
 
+    });
+
+
+// обработка элементов, которые были динамически добавлены на страницу
+// якобы рабочая
+
+$(function() {
+        $(document).on('click touchstart', '.selector', function(){
+            console.log($(this));
+        });
     });
