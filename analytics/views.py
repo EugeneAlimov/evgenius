@@ -56,18 +56,14 @@ def pars_tags_list(request):
 
 
 def group_prepare(request):
+    """Принимаем AJAX от клиента с названием группы по которой нужно вывести список тегов и комментариев
+    принадлежащих к этой группе, фильтруем и создаем словарь с парами имя - комментарий"""
     if request.method == 'POST':
         data = request.POST
-        tags_list = []
-        # tags_list = Tags.objects.filter(group=Group.objects.get(name_group=data.get('groupList')))
+        tags_comments_list = {}
         for e in Tags.objects.filter(group=Group.objects.get(name_group=data.get('groupList'))):
-            tags_list.append(e.name_tag)
-        print(tags_list)
-        # data = tags_list
-        # print(JsonResponse(data, safe=False))
-        # return JsonResponse(data, safe=False)
-        data = {'response': tags_list}
-        print(JsonResponse(data))
+            tags_comments_list[e.name_tag] = str(e.comment)
+            data = tags_comments_list
         return JsonResponse(data)
 
 
@@ -75,15 +71,9 @@ def tags_prepare(request):
     """Подготовка списка переменных и тегов для тренда"""
     if request.method == 'POST' and request.POST.get('done'):
         data = request.POST
-        print(data)
-        # date_time_before = data.get('date-time-before')
-        # date_time_after = data.get('date-time-after')
-
         group = Group.objects.all()
         tags = Tags.objects.all()
         comment = Tags.objects.all()
-        print('gotcha!!!!')
-        print(type(group))
         return render(request, 'analytics/analytics.html', context={'plot_div': chart(), 'group': group, 'tags': tags,
                                                                     'comment': comment}, )
 
