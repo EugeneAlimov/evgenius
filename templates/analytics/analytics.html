@@ -41,9 +41,15 @@
     </div>
 </nav>
 
+
+
+
+
+
+<!--ajax на сервер со списком групп-->
 <form id="groupList" enctype="multipart/form-data" action="{% url 'group_prepare' %}" method="post">{% csrf_token %}
     <div class="input-group mb-3">
-        <select class="custom-select" id="inputGroupSelect03" name="groupList" form="groupList" aria-label="Example select with button addon">
+        <select class="custom-select inputGroupTagsSelect" id="inputGroupSelect03" name="groupList" form="groupList" aria-label="Example select with button addon">
             <option selected id="prime">Выбрать группу</option>
             {% for group in group %}
             <option value="{{ group.name_group }}">{{ group.name_group }}</option>
@@ -53,7 +59,7 @@
 </form>
 
 
-<!-- Modal tags service -->
+<!-- Modal tags service загрузка excel файла-->
 <div class="modal fade" id="service-Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
     <div class="modal-dialog">
@@ -78,7 +84,54 @@
 </div>
 
 
-<!-- Modal tags prepare -->
+<form id="sqlRequestToInflux" enctype="multipart/form-data" action="{% url 'tags_influx_prepare' %}" method="post">{% csrf_token %}
+        <div class="time">
+        <div><span>Дата с</span></div>
+        <label>
+            <input type="datetime-local" name="date-time-before">
+        </label>
+    </div>
+    <p></p>
+    <p></p>
+    <div class="time">
+        <div><span>Дата по</span></div>
+        <label>
+            <input type="datetime-local" name="date-time-after">
+        </label>
+    </div>
+    <div class="card border-info mb-3" style="width: 18rem;">
+        <div class="card-header">
+            Список выбранных тегов
+        </div>
+        <ul class="list-group list-group-flush text-info listOfSelectedTags"></ul>
+    </div>
+    <input type="text" id="huext" class="hujas" name="huname" placeholder="enter some text">
+    <input type="text" id="hiddenInput" class="hujas" name="list" value="">
+
+    <button type="button" id="submit_btn_category" class="ajaxClick">Готово</button>
+</form>
+
+
+<!--ajax на сервер со списко тегов для запроса в influxDB-->
+<!--<form id="sqlRequestToInflux" action="{% url 'tags_influx_prepare' %}" method="post">{% csrf_token %}-->
+<!--    <div class="time">-->
+<!--        <div><span>Дата с</span></div>-->
+<!--        <label>-->
+<!--            <input type="datetime-local" name="date-time-before">-->
+<!--        </label>-->
+<!--    </div>-->
+<!--    <p></p>-->
+<!--    <p></p>-->
+<!--    <div class="time">-->
+<!--        <div><span>Дата по</span></div>-->
+<!--        <label>-->
+<!--            <input type="datetime-local" name="date-time-after">-->
+<!--        </label>-->
+<!--    </div>-->
+<!--    <button type="submit" id="submit_btn_category" class="ajaxClick">Готово</button>-->
+<!--</form>-->
+
+<!-- Modal tags prepare ajax на сервер чтобы сформировать запрос в базу и вытянуть наборы значений для тренда -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
     <div class="modal-dialog">
@@ -89,39 +142,14 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="tags-list-prepare" enctype="multipart/form-data" action="{% url 'tags_prepare' %}" method="post">{% csrf_token %}
-                <div class="modal-body">
-                    <div class="time">
-                        <div>
-                            <span>Дата с</span>
-                        </div>
-                        <label>
-                            <input type="datetime-local" name="date-time-before">
-                        </label>
-                    </div>
-                    <p></p>
-                    <p></p>
-                    <div class="time">
-                        <div>
-                            <span>Дата по</span>
-                        </div>
-                        <label>
-                            <input type="datetime-local" name="date-time-after">
-                        </label>
-                    </div>
-                    <p></p>
-                    <p></p>
 
-
-
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="modal"
+            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="modal"
                             data-target="#exampleModalScrollable">
                         Выбор тегов
                     </button>
 
                     <!-- Modal -->
-                    <div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog"
+            <div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog"
                          aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-scrollable" role="document">
                             <div class="modal-content">
@@ -131,34 +159,34 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
+
                                 <div class="modal-body listTags">
                                 </div>
+
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times; Закрыть  </span>
+                                    </button>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <button type="button" class="close tagsSelected" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">Продолжить</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
 
-                    <div class="card border-info mb-3" style="width: 18rem;">
-                        <div class="card-header">
-                            Список выбранных тегов
-                        </div>
-                        <ul class="list-group list-group-flush text-info">
-                            <li class="list-group-item">Тег 1</li>
-                            <li class="list-group-item">Тег 2</li>
-                            <li class="list-group-item">Тег 3</li>
-                            <li class="list-group-item">Тег 4</li>
-                        </ul>
-                    </div>
+
+                <div class="modal-body">
+
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                        <button type="submit" class="btn btn-primary" name="done" value="done">Готово</button>
+<!--                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>-->
+<!--                        <button type="submit" class="btn btn-primary" name="done" value="done">Готово</button>-->
                     </div>
-                </div>
-            </form>
+                    </div>
         </div>
     </div>
 </div>

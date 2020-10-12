@@ -19,7 +19,7 @@ from . import views
 
 urlpatterns = [
     path('', views.analytics_render, name='analytics'),
-    path('tags_prepare', views.tags_prepare, name='tags_prepare'),
+    path('tags_influx_prepare', views.tags_influx_prepare, name='tags_influx_prepare'),
     path('group_prepare', views.group_prepare, name='group_prepare'),
     path('pars_tags_list', views.pars_tags_list, name='pars_tags_list'),
 ]

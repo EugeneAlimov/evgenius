@@ -68,15 +68,21 @@ def group_prepare(request):
         return JsonResponse(data)
 
 
-def tags_prepare(request):
+def tags_influx_prepare(request):
     """Подготовка списка переменных и тегов для тренда"""
-    if request.method == 'POST' and request.POST.get('done'):
-        data = request.POST
-        group = Group.objects.all()
-        tags = Tags.objects.all()
-        comment = Tags.objects.all()
-        return render(request, 'analytics/analytics.html', context={'plot_div': chart(), 'group': group, 'tags': tags,
-                                                                    'comment': comment}, )
+
+    if request.method == 'POST':
+        influx_data = request.POST
+        print(influx_data)
+        influx_query_tags = influx_data.get('list')
+        qwe = {'fsdf': 'fdsfr'}
+        print('LIST: ', influx_query_tags)
+        return JsonResponse(qwe, safe=False)
+        # group = Group.objects.all()
+        # tags = Tags.objects.all()
+        # comment = Tags.objects.all()
+        # return render(request, 'analytics/analytics.html', context={'plot_div': chart(), 'group': group, 'tags': tags,
+        #                                                             'comment': comment}, )
 
 
 def analytics_render(request):
@@ -146,3 +152,12 @@ def chart():
     fig.update_layout(title_text="multiple y-axes example", width=1800, )
 
     return fig.to_html('plot_div')
+
+
+# def category_adding(request):
+#     if request.method == 'POST':
+#         hujata = request.POST
+#         form_name = hujata.get('huname')
+#         print(hujata, form_name)
+#         hujata = {'response': 'from django'}
+#     return JsonResponse(hujata)
