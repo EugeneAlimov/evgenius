@@ -7,6 +7,9 @@
     <link rel="icon" href="{% static 'img/analytics.png' %}" type="image/x-icon">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 
+    <link rel="stylesheet" href="{% static 'tail.DateTime-master/css/tail.datetime-default-green.css' %}" />
+    <script type="text/javascript" src="{% static 'tail.DateTime-master/js/tail.datetime.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'tail.DateTime-master/langs/tail.datetime-ru.js' %}"></script>
 </head>
 
 <body>
@@ -40,10 +43,6 @@
         </div>
     </div>
 </nav>
-
-
-
-
 
 
 <!--ajax на сервер со списком групп-->
@@ -84,21 +83,89 @@
 </div>
 
 
+<!--ajax на сервер со списком тегов-->
 <form id="sqlRequestToInflux" enctype="multipart/form-data" action="{% url 'tags_influx_prepare' %}" method="post">{% csrf_token %}
-        <div class="time">
-        <div><span>Дата с</span></div>
-        <label>
-            <input type="datetime-local" name="date-time-before">
-        </label>
-    </div>
-    <p></p>
-    <p></p>
-    <div class="time">
-        <div><span>Дата по</span></div>
-        <label>
-            <input type="datetime-local" name="date-time-after">
-        </label>
-    </div>
+
+           <input type="text" class="tail-datetime-field" placeholder="Дата и время 'C'">
+       <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function(){
+            tail.DateTime(".tail-datetime-field", {
+                animate: true,
+                classNames: false,
+                closeButton: true,
+                dateFormat: "YYYY-mm-dd",
+                dateStart: false,
+                dateRanges: [],
+                dateBlacklist: true,
+                dateEnd: new Date(Date.now()),
+                locale: "ru",
+                position: "bottom",
+                rtl: "auto",
+                startOpen: false,
+                stayOpen: false,
+                time12h: false,
+                timeFormat: "HH:ii:ss",
+                timeHours: true,
+                timeMinutes: true,
+                timeSeconds: true,
+                timeIncrement: true,
+                timeStepHours: 1,
+                timeStepMinutes: 1,
+                timeStepSeconds: 1,
+                today: true,
+                tooltips: [],
+                viewDefault: "days",
+                viewDecades: false,
+                viewYears: true,
+                viewMonths: true,
+                viewDays: true,
+                weekStart: 1
+            });
+        });
+</script>
+
+<input type="text" class="tail-datetime-field" placeholder="Дата и время 'ПО'">
+       <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function(){
+            tail.DateTime(".tail-datetime-field", {
+                animate: true,
+                classNames: false,
+                closeButton: true,
+                dateFormat: "YYYY-mm-dd",
+                dateStart: false,
+                dateRanges: [],
+                dateBlacklist: true,
+                dateEnd: new Date(Date.now()),
+                locale: "ru",
+                position: "bottom",
+                rtl: "auto",
+                startOpen: false,
+                stayOpen: false,
+                time12h: false,
+                timeFormat: "HH:ii:ss",
+                timeHours: true,
+                timeMinutes: true,
+                timeSeconds: true,
+                timeIncrement: true,
+                timeStepHours: 1,
+                timeStepMinutes: 1,
+                timeStepSeconds: 1,
+                today: true,
+                tooltips: [],
+                viewDefault: "days",
+                viewDecades: false,
+                viewYears: true,
+                viewMonths: true,
+                viewDays: true,
+                weekStart: 1
+            });
+        });
+</script>
+
+
+
+
+
     <div class="card border-info mb-3" style="width: 18rem;">
         <div class="card-header">
             Список выбранных тегов
@@ -106,7 +173,7 @@
         <ul class="list-group list-group-flush text-info listOfSelectedTags"></ul>
     </div>
     <input type="text" id="huext" class="hujas" name="huname" placeholder="enter some text">
-    <input type="text" id="hiddenInput" class="hujas" name="list" value="">
+    <input type="hidden" id="hiddenInput" class="hujas" name="list" value="">
 
     <button type="button" id="submit_btn_category" class="ajaxClick">Готово</button>
 </form>
@@ -203,6 +270,8 @@
     <script src="{% static 'js/popper.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/AJAXscript.js' %}"></script>
+
+
 
 </body>
 
