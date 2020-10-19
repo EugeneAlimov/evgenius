@@ -1,5 +1,5 @@
 import plotly.graph_objects as go
-# from mongo_db import *
+from mongo_db import *
 
 my_query_1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 my_query_2 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]

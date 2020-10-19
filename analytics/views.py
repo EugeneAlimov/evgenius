@@ -10,7 +10,8 @@ from openpyxl import load_workbook, Workbook, worksheet
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.utils import get_column_letter
 from django.core.exceptions import ObjectDoesNotExist
-
+from influxdb import InfluxDBClient
+from datetime import datetime, timezone
 
 def pars_tags_list(request):
     """Получаем Excel файл из формы и заполняем базу тегами"""
@@ -74,10 +75,29 @@ def tags_influx_prepare(request):
     if request.method == 'POST':
         influx_data = request.POST
         print(influx_data)
+
         influx_query_tags = influx_data.get('list')
-        qwe = {'fsdf': 'fdsfr'}
-        print('LIST: ', influx_query_tags)
-        return JsonResponse(qwe, safe=False)
+        time_before = influx_data.get('dateTimeFrom')                   # Есть проблемы с часовым поясом. Influx пишет
+        # print(time_before)                                            # в UTC - нужно преобразовать мое локальное
+        time_after = influx_data.get('dateTimeAfter')                   # время в UTC. Как это сделать на питоне пока
+        # time_before = datetime.strptime(time_before, '%Y-%m-%d %H:%M:%S')   # не знаю. Может попробовать JS.
+        # time_before = time_before.astimezone()                        # На крайняк просто отнимать 2 часа, но это бред
+        # print(time_before)
+        bucket = "line"                                                                     # Имя базы данных
+        measurement = "line"                                                                # Имя измерения
+
+        client = InfluxDBClient('localhost', 8086, 'root', 'root')                          # Подключение к базе
+        list_database = client.get_list_database()
+        client.switch_database(bucket)                                                  # Переключение на нужную базу
+
+        query = f'SELECT "time_pulse", "Clock_0.5Hz", "pnIN_ConveyorRunning" FROM {bucket}."autogen".{measurement} ' \
+                f'WHERE time >= \'{time_before}\' AND time < \'{time_after}\''
+
+        result = client.query(query)
+        print(result)
+
+        response = {'fsdf': 'fdsfr'}
+        return JsonResponse(response, safe=False)
         # group = Group.objects.all()
         # tags = Tags.objects.all()
         # comment = Tags.objects.all()
