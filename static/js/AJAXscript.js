@@ -13,8 +13,8 @@ let chBoxesChecked = [];
             url: url,
             data: $('#groupList').serialize(),                                   //сериализация данных из формы
             method: 'POST',
-            success: function(data){                                      // когда данные успешно вернулись разбираю data
-                for (let key in data) {                                   // на пары ключ-значение и отрисовываю список
+            success: function(data){                                    // когда данные успешно вернулись разбираю data
+                for (let key in data) {                                 // на пары ключ-значение и отрисовываю список
                     $('.listTags').append(
                     "<div class=\"custom-control custom-checkbox\">" +
                     "<input type=\"checkbox\" class=\"custom-control-input checkboxes\" id=" +
