@@ -34,7 +34,7 @@ let chBoxesChecked = [];
 // POST зарос на сервер для формирования SQL запроса в InfluxDB
 $(document).on('click', '.ajaxClick', function(e) {
     e.preventDefault();
-    // $('#hiddenInput').val('');
+    console.log(timeBefore.type)
 
         let newUrl = $('#sqlRequestToInflux').attr('action');
 

@@ -89,7 +89,7 @@
 <form id="sqlRequestToInflux" enctype="multipart/form-data" action="{% url 'tags_influx_prepare' %}" method="post">{% csrf_token %}
 
 
-        <input type="text" class="tail-datetime-field" name="dateTimeFrom" placeholder="Дата и время 'C'">
+        <input type="text" id="timeBefore" class="tail-datetime-field" name="dateTimeFrom" placeholder="Дата и время 'C'">
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(){
             tail.DateTime(".tail-datetime-field", {
@@ -128,7 +128,7 @@
 
     </script>
 
-    <input type="text" class="tail-datetime-field" name="dateTimeAfter" placeholder="Дата и время 'ПО'">
+    <input type="text" id="timeAfter" class="tail-datetime-field" name="dateTimeAfter" placeholder="Дата и время 'ПО'">
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(){
             tail.DateTime(".tail-datetime-field", {

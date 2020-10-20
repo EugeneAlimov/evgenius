@@ -1,4 +1,5 @@
 # # Create your views here.
+import pytz
 import simplejson
 from django.core.serializers import serialize
 from django.http import JsonResponse, HttpResponse
@@ -11,7 +12,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.utils import get_column_letter
 from django.core.exceptions import ObjectDoesNotExist
 from influxdb import InfluxDBClient
-from datetime import datetime, timezone
+from datetime import datetime as dt, timedelta
 
 def pars_tags_list(request):
     """Получаем Excel файл из формы и заполняем базу тегами"""
@@ -77,21 +78,24 @@ def tags_influx_prepare(request):
         print(influx_data)
 
         influx_query_tags = influx_data.get('list')
-        time_before = influx_data.get('dateTimeFrom')                   # Есть проблемы с часовым поясом. Influx пишет
-        # print(time_before)                                            # в UTC - нужно преобразовать мое локальное
-        time_after = influx_data.get('dateTimeAfter')                   # время в UTC. Как это сделать на питоне пока
-        # time_before = datetime.strptime(time_before, '%Y-%m-%d %H:%M:%S')   # не знаю. Может попробовать JS.
-        # time_before = time_before.astimezone()                        # На крайняк просто отнимать 2 часа, но это бред
-        # print(time_before)
+
+        time_before = influx_data.get('dateTimeFrom')                               # получаем timeFrom в виде строки
+        time_before = dt.strptime(time_before, '%Y-%m-%d %H:%M:%S')                 # делаем объект datetime
+        time_before = time_before - timedelta(hours=2)      # получаем время в UTC потому что influx ставит время в нем
+
+        time_after = influx_data.get('dateTimeAfter')                               # получаем timeFrom в виде строки
+        time_after = dt.strptime(time_after, '%Y-%m-%d %H:%M:%S')                   # делаем объект datetime
+        time_after = time_after - timedelta(hours=2)        # получаем время в UTC потому что influx ставит время в нем
+
         bucket = "line"                                                                     # Имя базы данных
         measurement = "line"                                                                # Имя измерения
 
         client = InfluxDBClient('localhost', 8086, 'root', 'root')                          # Подключение к базе
-        list_database = client.get_list_database()
+        list_database = client.get_list_database()                                      # Список баз данных
         client.switch_database(bucket)                                                  # Переключение на нужную базу
 
         query = f'SELECT "time_pulse", "Clock_0.5Hz", "pnIN_ConveyorRunning" FROM {bucket}."autogen".{measurement} ' \
-                f'WHERE time >= \'{time_before}\' AND time < \'{time_after}\''
+                f'WHERE time >= \'{time_before}\' AND time < \'{time_after}\''                      # Запрос в Influx
 
         result = client.query(query)
         print(result)
