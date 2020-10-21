@@ -1,5 +1,5 @@
 let chBoxesChecked = [];
-
+let list = new Set();
 
 
 //POST зарос на сервер для выбора из какой группы читать теги
@@ -14,6 +14,9 @@ let chBoxesChecked = [];
             data: $('#groupList').serialize(),                                   //сериализация данных из формы
             method: 'POST',
             success: function(data){                                    // когда данные успешно вернулись разбираю data
+
+                $('.listTags').empty()                                  // Очистка списка
+
                 for (let key in data) {                                 // на пары ключ-значение и отрисовываю список
                     $('.listTags').append(
                     "<div class=\"custom-control custom-checkbox\">" +
@@ -34,7 +37,6 @@ let chBoxesChecked = [];
 // POST зарос на сервер для формирования SQL запроса в InfluxDB
 $(document).on('click', '.ajaxClick', function(e) {
     e.preventDefault();
-    console.log(timeBefore.type)
 
         let newUrl = $('#sqlRequestToInflux').attr('action');
 
@@ -48,30 +50,31 @@ $(document).on('click', '.ajaxClick', function(e) {
             });
 });
 
-
-
-
 // Перечень выбранных тегов. Генератор списка с чекбоксами.
 // Нужно добавить кнопку удаления ненужных тегов и запрос на обновление SQL запроса для перерисовки тренда
 
 $(document).on('click', '.tagsSelected', function(){                // по клику на кнопке "Продлжить"
-    let checkboxes = $('.checkboxes')                               // получаем содержимое всех чеубоксов
+    let checkboxes = $('.checkboxes');                              // получаем содержимое всех чеубоксов
 
-    for (let index = 0; index < checkboxes.length; index++) {       // Отрисовуем в отдельный список выбранные теги
+    $('.listOfSelectedTags').empty();                               // Очистка списка
+
+    for (let index = 0; index < checkboxes.length; index++) {       // список уникальных тегов, чтобы не было повторов
         if (checkboxes[index].checked) {
-        chBoxesChecked.push(checkboxes[index].value);                // массив значений уже выбранных чекбоксов
-            $('.listOfSelectedTags').append(
-                "<div class=\"custom-control custom-checkbox\">" +
-                "<input type=\"checkbox\" class=\"custom-control-input checkboxesTagsSelected\" name=\"chBoxes\" id=" +
-                index + " value=" + index + ">" +
-                "<label class=\"custom-control-label\" for=" + index + ">" + checkboxes[index].value +
-                "</label></div>"
-                );
+            list.add(checkboxes[index].value);
         };
     };
+
+    for (let i = 0; i < list.length; i++) {                          // Отрисовываем в отдельный список выбранные теги
+        chBoxesChecked.push(list[i]);
+        $('.listOfSelectedTags').append(
+            "<div class=\"custom-control custom-checkbox\">" +
+            "<input type=\"checkbox\" class=\"custom-control-input checkboxesTagsSelected\" name=\"chBoxes\" id=" +
+            i + " value=" + i + ">" +
+            "<label class=\"custom-control-label\" for=" + i + ">" + list[i] +
+            "</label></div>"
+        );
+    };
     $('#hiddenInput').val(chBoxesChecked);
-    // return function(chBoxesChecked) {;
-// };
 });
 
 

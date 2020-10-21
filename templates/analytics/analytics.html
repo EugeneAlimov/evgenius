@@ -85,7 +85,7 @@
 </div>
 
 
-<!--ajax на сервер со списком тегов-->
+<!--ajax на сервер со списко тегов для запроса в influxDB-->
 <form id="sqlRequestToInflux" enctype="multipart/form-data" action="{% url 'tags_influx_prepare' %}" method="post">{% csrf_token %}
 
 
@@ -167,119 +167,34 @@
 
     </script>
 
+    <br>
 
+    <div>
+    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="modal" data-target="#exampleModalScrollable">
+        Выбор тегов
+    </button>
+    </div>
+
+    <br>
+    <div>
     <div class="card border-info mb-3" style="width: 18rem;">
         <div class="card-header">
             Список выбранных тегов
         </div>
         <ul class="list-group list-group-flush text-info listOfSelectedTags"></ul>
     </div>
+        <button>Удалить выбранное</button>
+    </div>
 <!--    <input type="text" id="huext" class="hujas" name="huname" placeholder="enter some text">-->
     <input type="hidden" id="hiddenInput" class="hujas" name="list" value="">
-
+    <br>
+    <br>
     <button type="button" id="submit_btn_category" class="ajaxClick">Готово</button>
 </form>
 
 
-<!--ajax на сервер со списко тегов для запроса в influxDB-->
-<!--<form id="sqlRequestToInflux" action="{% url 'tags_influx_prepare' %}" method="post">{% csrf_token %}-->
 
 
-<!--    <input type="text" class="tail-datetime-field" placeholder="Дата и время 'C'">-->
-<!--    <script type="text/javascript">-->
-<!--        document.addEventListener("DOMContentLoaded", function(){-->
-<!--            tail.DateTime(".tail-datetime-field", {-->
-<!--                animate: true,-->
-<!--                classNames: false,-->
-<!--                closeButton: true,-->
-<!--                dateFormat: "YYYY-mm-dd",-->
-<!--                dateStart: false,-->
-<!--                dateRanges: [],-->
-<!--                dateBlacklist: true,-->
-<!--                dateEnd: new Date(Date.now()),-->
-<!--                locale: "ru",-->
-<!--                position: "bottom",-->
-<!--                rtl: "auto",-->
-<!--                startOpen: false,-->
-<!--                stayOpen: false,-->
-<!--                time12h: false,-->
-<!--                timeFormat: "HH:ii:ss",-->
-<!--                timeHours: true,-->
-<!--                timeMinutes: true,-->
-<!--                timeSeconds: true,-->
-<!--                timeIncrement: true,-->
-<!--                timeStepHours: 1,-->
-<!--                timeStepMinutes: 1,-->
-<!--                timeStepSeconds: 1,-->
-<!--                today: true,-->
-<!--                tooltips: [],-->
-<!--                viewDefault: "days",-->
-<!--                viewDecades: false,-->
-<!--                viewYears: true,-->
-<!--                viewMonths: true,-->
-<!--                viewDays: true,-->
-<!--                weekStart: 1-->
-<!--            });-->
-<!--        });-->
-
-<!--    </script>-->
-
-<!--    <input type="text" class="tail-datetime-field" placeholder="Дата и время 'ПО'">-->
-<!--    <script type="text/javascript">-->
-<!--        document.addEventListener("DOMContentLoaded", function(){-->
-<!--            tail.DateTime(".tail-datetime-field", {-->
-<!--                animate: true,-->
-<!--                classNames: false,-->
-<!--                closeButton: true,-->
-<!--                dateFormat: "YYYY-mm-dd",-->
-<!--                dateStart: false,-->
-<!--                dateRanges: [],-->
-<!--                dateBlacklist: true,-->
-<!--                dateEnd: new Date(Date.now()),-->
-<!--                locale: "ru",-->
-<!--                position: "bottom",-->
-<!--                rtl: "auto",-->
-<!--                startOpen: false,-->
-<!--                stayOpen: false,-->
-<!--                time12h: false,-->
-<!--                timeFormat: "HH:ii:ss",-->
-<!--                timeHours: true,-->
-<!--                timeMinutes: true,-->
-<!--                timeSeconds: true,-->
-<!--                timeIncrement: true,-->
-<!--                timeStepHours: 1,-->
-<!--                timeStepMinutes: 1,-->
-<!--                timeStepSeconds: 1,-->
-<!--                today: true,-->
-<!--                tooltips: [],-->
-<!--                viewDefault: "days",-->
-<!--                viewDecades: false,-->
-<!--                viewYears: true,-->
-<!--                viewMonths: true,-->
-<!--                viewDays: true,-->
-<!--                weekStart: 1-->
-<!--            });-->
-<!--        });-->
-
-<!--    </script>-->
-<!--    <button type="submit" class="ajaxClick">Готово</button>-->
-<!--</form>-->
-
-<!-- Modal tags prepare ajax на сервер чтобы сформировать запрос в базу и вытянуть наборы значений для тренда -->
-<!--<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"-->
-<!--     aria-hidden="true">-->
-<!--    <div class="modal-dialog">-->
-<!--        <div class="modal-content">-->
-<!--            <div class="modal-header">-->
-<!--                <h5 class="modal-title" id="exampleModalLabel">Набор тегов</h5>-->
-<!--                <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
-<!--                    <span aria-hidden="true">&times;</span>-->
-<!--                </button>-->
-<!--            </div>-->
-
-            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="modal" data-target="#exampleModalScrollable">
-                Выбор тегов
-            </button>
 
 
 

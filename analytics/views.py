@@ -1,7 +1,4 @@
 # # Create your views here.
-import pytz
-import simplejson
-from django.core.serializers import serialize
 from django.http import JsonResponse, HttpResponse
 import plotly.graph_objects as go
 from analytics.models import *
@@ -13,6 +10,7 @@ from openpyxl.utils import get_column_letter
 from django.core.exceptions import ObjectDoesNotExist
 from influxdb import InfluxDBClient
 from datetime import datetime as dt, timedelta
+
 
 def pars_tags_list(request):
     """Получаем Excel файл из формы и заполняем базу тегами"""
