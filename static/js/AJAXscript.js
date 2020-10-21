@@ -48,34 +48,45 @@ $(document).on('click', '.ajaxClick', function(e) {
             });
 });
 
-// Перечень выбранных тегов. Генератор списка с чекбоксами.
-// Нужно добавить кнопку удаления ненужных тегов и запрос на обновление SQL запроса для перерисовки тренда
-
+// Перечень выбранных тегов
 $(document).on('click', '.tagsSelected', function(){                // по клику на кнопке "Продлжить"
     let checkboxes = $('.checkboxes');                              // получаем содержимое всех чеубоксов
 
-    $('.listOfSelectedTags').empty();                               // Очистка списка
-
     for (let index = 0; index < checkboxes.length; index++) {       // список уникальных тегов, чтобы не было повторов
         if (checkboxes[index].checked) {
-            list.add(checkboxes[index].value);
+            list.add(checkboxes[index].value);                      // добавляются в Set значения из checkboxes
         };
     };
-        for (let i of list) {                                       // Генератор списка тегов, отобраных для отображения
-        chBoxesChecked.push(i);
-        console.log(i)
-        $('.listOfSelectedTags').append(
-            "<div class=\"custom-control custom-checkbox\">" +
-            "<input type=\"checkbox\" class=\"custom-control-input checkboxesTagsSelected\" name=\"chBoxes\" id=" +
-            i + " value=" + i + ">" +
-            "<label class=\"custom-control-label\" for=" + i + ">" + i +
-            "</label></div>"
-        );
-    };
-    $('#hiddenInput').val(chBoxesChecked);
+    tagsListForInfluxGenerator();
 });
 
+// Редактирование списка выбранных тегов (удаление ненужных)
+$(document).on('click', '.tagsDelete', function() {
+    let checkboxes = $('.checkboxesTagsSelected');
 
+    for (let index = 0; index < checkboxes.length; index++) {
+        if (checkboxes[index].checked) {
+            list.delete(checkboxes[index].value);                   // Удаляются из Set содержимое выбранных checkboxes
+        };
+    };
+    tagsListForInfluxGenerator();
+});
+
+//  Генератор списка с чекбоксами
+function tagsListForInfluxGenerator() {
+        $('.listOfSelectedTags').empty();
+            for (let i of list) {                                  // Генератор списка тегов, отобраных для отображения
+                chBoxesChecked.push(i);
+                $('.listOfSelectedTags').append(
+                    "<div class=\"custom-control custom-checkbox\">" +
+                    "<input type=\"checkbox\" class=\"custom-control-input checkboxesTagsSelected\" name=\"chBoxes\"" +
+                    "id=" + i + " value=" + i + ">" +
+                    "<label class=\"custom-control-label\" for=" + i + ">" + i +
+                    "</label></div>"
+                );
+            };
+        $('#hiddenInput').val(chBoxesChecked);          // скрытый input содержимое готорого отправляется ajax в influx
+    };
 
 // обработка элементов, которые были динамически добавлены на страницу
 // якобы рабочая
