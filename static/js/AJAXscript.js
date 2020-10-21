@@ -14,7 +14,7 @@ let list = new Set();
             data: $('#groupList').serialize(),                                   //сериализация данных из формы
             method: 'POST',
             success: function(data){                                    // когда данные успешно вернулись разбираю data
-
+                $('#prime').hide()
                 $('.listTags').empty()                                  // Очистка списка
 
                 for (let key in data) {                                 // на пары ключ-значение и отрисовываю список
@@ -29,7 +29,6 @@ let list = new Set();
                 }
             });
 });
-
 
 
 // POST зарос на сервер для формирования SQL запроса в InfluxDB
