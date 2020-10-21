@@ -4,7 +4,7 @@ let list = new Set();
 
 //POST зарос на сервер для выбора из какой группы читать теги
 
- $(document).on('change', '.inputGroupTagsSelect', function (e) {         // при событии на элементе формы (изменении)
+ $(document).on('change', '.inputGroupTagsSelect', function(e) {         // при событии на элементе формы (изменении)
     e.preventDefault();                                                   // сброс стандартного поведения
 
         let url = $('#groupList').attr('action');
@@ -26,9 +26,7 @@ let list = new Set();
                     "</label></div>"
                         );
                     };
-                
                 }
-            
             });
 });
 
@@ -45,8 +43,8 @@ $(document).on('click', '.ajaxClick', function(e) {
                 data: $('#sqlRequestToInflux').serialize(),
                 method: 'POST',
                 success: function() {
-                    console.log('DONE');
-            }
+                    console.log('ajax sql influx DONE');
+                }
             });
 });
 
@@ -63,14 +61,14 @@ $(document).on('click', '.tagsSelected', function(){                // по кл
             list.add(checkboxes[index].value);
         };
     };
-
-    for (let i = 0; i < list.length; i++) {                          // Отрисовываем в отдельный список выбранные теги
-        chBoxesChecked.push(list[i]);
+        for (let i of list) {                                       // Генератор списка тегов, отобраных для отображения
+        chBoxesChecked.push(i);
+        console.log(i)
         $('.listOfSelectedTags').append(
             "<div class=\"custom-control custom-checkbox\">" +
             "<input type=\"checkbox\" class=\"custom-control-input checkboxesTagsSelected\" name=\"chBoxes\" id=" +
             i + " value=" + i + ">" +
-            "<label class=\"custom-control-label\" for=" + i + ">" + list[i] +
+            "<label class=\"custom-control-label\" for=" + i + ">" + i +
             "</label></div>"
         );
     };
