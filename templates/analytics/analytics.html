@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="{% static 'tail.DateTime-master/css/tail.datetime-default-green.css' %}"/>
     <script type="text/javascript" src="{% static 'tail.DateTime-master/js/tail.datetime.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'tail.DateTime-master/langs/tail.datetime-ru.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'js/plotly-latest.min.js' %}"></script>
 </head>
 
 <body>
@@ -229,22 +231,17 @@
             </div>
 
 
-<!--            <div class="modal-body">-->
-<!--                <div class="modal-footer">-->
-<!--                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>-->
-<!--                    <button type="submit" class="btn btn-primary" name="done" value="done">Готово</button>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
 
 <!-- Chart -->
-<div class="chart">
-    {% autoescape off %}
-    {{ plot_div }}
-    {% endautoescape %}
-</div>
+
+<div id="chart"></div>
+
+
+<!--<div class="chart">-->
+<!--    {% autoescape off %}-->
+<!--    {{ plot_div }}-->
+<!--    {% endautoescape %}-->
+<!--</div>-->
 
 <script src="{% static 'js/jquery-3.5.1.slim.min.js' %}"></script>
 <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
