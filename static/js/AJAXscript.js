@@ -1,6 +1,23 @@
 let chBoxesChecked = [];
 let list = new Set();
 
+let excelFileSubmitButton = document.getElementById('excelFileSubmitButton'); // отключение по умолчанию кнопки отправки
+excelFileSubmitButton.disabled=true; // excel афйла на распарсивание
+
+let excelFileInput = document.getElementById('excelFileInput'); // получение объекта input-a отправки на распарсивание
+let excelFileInputValue = excelFileInput.value; // excel файла и длины строки содержимого объекта
+
+excelFileInput.addEventListener('change', hideExcelFileSubmitButton); // как произойдет изменение в форме вызов функции
+                                                                      // включение кнопки
+// Включение кнопки отправки excel файла если содержимое инпута изменится и будет > 0
+
+function hideExcelFileSubmitButton() {
+    excelFileInputValue = excelFileInput.value;
+    if(excelFileInputValue.length > 0) {
+        excelFileSubmitButton.disabled=false
+    };
+};
+
 
 //POST зарос на сервер для выбора из какой группы читать теги
 
@@ -47,8 +64,9 @@ $(document).on('click', '.ajaxClick', function(e) {
             });
 });
 
+
 // Перечень выбранных тегов
-$(document).on('click', '.tagsSelected', function(){                // по клику на кнопке "Продлжить"
+$(document).on('click', '.tagsSelected', function() {                // по клику на кнопке "Продлжить"
     let checkboxes = $('.checkboxes');                              // получаем содержимое всех чеубоксов
 
     for (let index = 0; index < checkboxes.length; index++) {       // список уникальных тегов, чтобы не было повторов
@@ -58,6 +76,7 @@ $(document).on('click', '.tagsSelected', function(){                // по кл
     };
     tagsListForInfluxGenerator();
 });
+
 
 // Редактирование списка выбранных тегов (удаление ненужных)
 $(document).on('click', '.tagsDelete', function() {
@@ -70,6 +89,7 @@ $(document).on('click', '.tagsDelete', function() {
     };
     tagsListForInfluxGenerator();
 });
+
 
 //  Генератор списка с чекбоксами
 function tagsListForInfluxGenerator() {
@@ -84,7 +104,7 @@ function tagsListForInfluxGenerator() {
                     "</label></div>"
                 );
             };
-        $('#hiddenInput').val(chBoxesChecked);          // скрытый input содержимое готорого отправляется ajax в influx
+        $('#hiddenInput').val(chBoxesChecked);          // скрытый input, содержимое готорого отправляется ajax в influx
     };
 
 // обработка элементов, которые были динамически добавлены на страницу
@@ -95,7 +115,10 @@ function tagsListForInfluxGenerator() {
 //        });
 //    });
 
-(function(){
+
+// plotly JS
+(function() {
+
         let trace1 = {x: [1, 2, 3], y: [4, 5, 6], name: 'yaxis1 data', type: 'scatter'};
 
         let trace2 = {x: [2, 3, 4], y: [40, 50, 60], name: 'yaxis2 data', yaxis: 'y2', type: 'scatter'};
@@ -108,40 +131,45 @@ function tagsListForInfluxGenerator() {
 
         let layout = {
             title: 'multiple y-axes example',
-            width: 1800,
+//            width: 1800,
             xaxis: {domain: [0.3, 0.7]},
-            yaxis: {
-                title: 'yaxis title',
-                titlefont: {color: '#1f77b4'},
-                tickfont: {color: '#1f77b4'}
+
+        yaxis: {
+            title: 'yaxis title',
+            titlefont: {color: '#1f77b4'},
+            tickfont: {color: '#1f77b4'},
             },
 
         yaxis2: {
             title: 'yaxis2 title',
             titlefont: {color: '#ff7f0e'},
             tickfont: {color: '#ff7f0e'},
-            anchor: 'free',
+            anchor: 'y',
             overlaying: 'y',
-            side: 'left',
+//            side: 'left',
             position: 0.15
         },
+
         yaxis3: {
             title: 'yaxis4 title',
             titlefont: {color: '#d62728'},
             tickfont: {color: '#d62728'},
-            anchor: 'x',
+            anchor: 'y',
             overlaying: 'y',
-            side: 'right'
+//            side: 'right'
+            position: 0.0
+
         },
+
         yaxis4: {
             title: 'yaxis5 title',
             titlefont: {color: '#9467bd'},
             tickfont: {color: '#9467bd'},
-            anchor: 'free',
+            anchor: 'y',
             overlaying: 'y',
-            side: 'right',
-            position: 0.85
+//            side: 'right',
+            position: 1.0
         }
-         };
-    Plotly.newPlot('chart', data, layout, {scrollZoom: true}, {editable: true});
+    };
+        Plotly.newPlot('chart', data, layout, {scrollZoom: true}, {editable: true});
 }());

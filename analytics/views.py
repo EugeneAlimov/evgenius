@@ -16,23 +16,24 @@ def pars_tags_list(request):
     """Получаем Excel файл из формы и заполняем базу тегами"""
 
     if request.method == 'POST':
-        uploaded_file = request.FILES['excel-file']   # получаем содержимое из формы загрузки файлов "name="excel-file""
-
+        uploaded_file = request.FILES['excel-file']  # получаем содержимое из формы загрузки файлов "name="excel-file""
         wb = load_workbook(filename=uploaded_file, read_only=False)  # получаем excel файл
-        ws = wb.active                                               # делаем лист активным в памяти
+        ws = wb.active  # делаем лист активным в памяти
 
     """вычитываем имя группы тегов из каждой строки, пытаемся извлечь из базы имя группы
     соответствующее текущей строчке тега, если имя группы есть - пишем в базу соответствующие теги, привязанные к этой
     группе соотношением один-комногим, если этого имени нет выпадает исключение. Обрабатываем сохраняя
     имя нруппы в таблицу Group и пишем в базу соответствующие теги, привязанные к этой 
-    группе соотношением один-комногим"""
+    группе соотношением один-комногим
+    Если файл с тегами не содержит нужные данные (пустые колонки или ячейки (кроме комментариев)) вывести уведомление 
+    об этом"""
 
     for i in range(1, ws.max_row + 1):
         name_group = (ws.cell(row=i, column=6)).value  # присваиваем переменной name_group значение ячейки столбца group
         try:
-            Group.objects.get(name_group=name_group)    # получаем из базы значение равное переменной name_group
-        except ObjectDoesNotExist:                      # исключение если такого значения в базе нет
-            save_set_of_groups = Group(name_group=name_group)   # сохраняем содержимое переменной name_group в базу
+            Group.objects.get(name_group=name_group)  # получаем из базы значение равное переменной name_group
+        except ObjectDoesNotExist:  # исключение если такого значения в базе нет
+            save_set_of_groups = Group(name_group=name_group)  # сохраняем содержимое переменной name_group в базу
             save_set_of_groups.save()
         group = Group.objects.get(name_group=name_group)  # g-заносим в переменную объект группы для текущей записи тега
         # чтобы создать связь один ко многим с таблицей Tags
@@ -46,7 +47,7 @@ def pars_tags_list(request):
             comment_tag = (ws.cell(row=i, column=5)).value
             save_set_of_tags = Tags(group=group, name_tag=name_tag, tag_table=tag_table, data_type=data_type,
                                     address=address_tag, comment=comment_tag)
-            save_set_of_tags.save()                                                   # сохраняем модель Tags
+            save_set_of_tags.save()  # сохраняем модель Tags
 
         fs = FileSystemStorage()
     group = Group.objects.all()
@@ -76,29 +77,29 @@ def tags_influx_prepare(request):
         print(influx_data)
 
         influx_query_tags = influx_data.get('list')
-        influx_query_tags = ','.join('"{0}"'.format(w) for w in influx_query_tags.split(','))   # генератор списка тегов
+        influx_query_tags = ','.join('"{0}"'.format(w) for w in influx_query_tags.split(','))  # генератор списка тегов
         print('influx_query_tags ', influx_query_tags)  # для query
 
-        time_before = influx_data.get('dateTimeFrom')                               # получаем timeFrom в виде строки
-        time_before = dt.strptime(time_before, '%Y-%m-%d %H:%M:%S')                 # делаем объект datetime
-        time_before = time_before - timedelta(hours=2)      # получаем время в UTC потому что influx ставит время в нем
+        time_before = influx_data.get('dateTimeFrom')  # получаем timeFrom в виде строки
+        time_before = dt.strptime(time_before, '%Y-%m-%d %H:%M:%S')  # делаем объект datetime
+        time_before = time_before - timedelta(hours=2)  # получаем время в UTC потому что influx ставит время в нем
 
-        time_after = influx_data.get('dateTimeAfter')                               # получаем timeFrom в виде строки
-        time_after = dt.strptime(time_after, '%Y-%m-%d %H:%M:%S')                   # делаем объект datetime
-        time_after = time_after - timedelta(hours=2)        # получаем время в UTC потому что influx ставит время в нем
+        time_after = influx_data.get('dateTimeAfter')  # получаем timeFrom в виде строки
+        time_after = dt.strptime(time_after, '%Y-%m-%d %H:%M:%S')  # делаем объект datetime
+        time_after = time_after - timedelta(hours=2)  # получаем время в UTC потому что influx ставит время в нем
 
         # print('influx_query_tags ', influx_query_tags)
 
-        bucket = "line"                                                                     # Имя базы данных
-        measurement = "line"                                                                # Имя измерения
+        bucket = "line"  # Имя базы данных
+        measurement = "line"  # Имя измерения
 
         client = InfluxDBClient('localhost', 8086, 'root', 'root')  # Подключение к базе. В будущем нужно сделать шаблон
         # внесения настроек подключения к базе. Создать модель с настройками и делать из нее выборку
-        list_database = client.get_list_database()            # Список баз данных
-        client.switch_database(bucket)                                                  # Переключение на нужную базу
+        list_database = client.get_list_database()  # Список баз данных
+        client.switch_database(bucket)  # Переключение на нужную базу
 
         query = f'SELECT {influx_query_tags} FROM {bucket}."autogen".{measurement} ' \
-                f'WHERE time >= \'{time_before}\' AND time < \'{time_after}\''                      # Запрос в Influx
+                f'WHERE time >= \'{time_before}\' AND time < \'{time_after}\''  # Запрос в Influx
         print('query= ', query)
 
         result = client.query(query)
@@ -180,7 +181,6 @@ def chart():
     fig.update_layout(title_text="multiple y-axes example", width=1800, )
 
     return fig.to_html('plot_div')
-
 
 # def category_adding(request):
 #     if request.method == 'POST':
