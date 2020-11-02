@@ -35,7 +35,7 @@ def pars_tags_list(request):
         except ObjectDoesNotExist:  # исключение если такого значения в базе нет
             save_set_of_groups = Group(name_group=name_group)  # сохраняем содержимое переменной name_group в базу
             save_set_of_groups.save()
-        group = Group.objects.get(name_group=name_group)  # g-заносим в переменную объект группы для текущей записи тега
+        group = Group.objects.get(name_group=name_group)  # заносим в переменную объект группы для текущей записи тега
         # чтобы создать связь один ко многим с таблицей Tags
         name_tag = (ws.cell(row=i, column=1)).value  # выбираем ячейки из таблицы
         try:
@@ -78,17 +78,10 @@ def tags_influx_prepare(request):
 
         influx_query_tags = influx_data.get('list')
         influx_query_tags = ','.join('"{0}"'.format(w) for w in influx_query_tags.split(','))  # генератор списка тегов
-        print('influx_query_tags ', influx_query_tags)  # для query
 
-        time_before = influx_data.get('dateTimeFrom')  # получаем timeFrom в виде строки
-        time_before = dt.strptime(time_before, '%Y-%m-%d %H:%M:%S')  # делаем объект datetime
-        time_before = time_before - timedelta(hours=2)  # получаем время в UTC потому что influx ставит время в нем
-
-        time_after = influx_data.get('dateTimeAfter')  # получаем timeFrom в виде строки
-        time_after = dt.strptime(time_after, '%Y-%m-%d %H:%M:%S')  # делаем объект datetime
-        time_after = time_after - timedelta(hours=2)  # получаем время в UTC потому что influx ставит время в нем
-
-        # print('influx_query_tags ', influx_query_tags)
+        time_before = influx_data.get('timeClientUtcValueFrom')  # timeFrom в UTC
+        time_after = influx_data.get('timeClientUtcValueTo')  # timeTo в UTC
+        print(time_before, time_after)
 
         bucket = "line"  # Имя базы данных
         measurement = "line"  # Имя измерения
@@ -98,8 +91,7 @@ def tags_influx_prepare(request):
         list_database = client.get_list_database()  # Список баз данных
         client.switch_database(bucket)  # Переключение на нужную базу
 
-        query = f'SELECT {influx_query_tags} FROM {bucket}."autogen".{measurement} ' \
-                f'WHERE time >= \'{time_before}\' AND time < \'{time_after}\''  # Запрос в Influx
+        query = f'SELECT {influx_query_tags} FROM {bucket}."autogen".{measurement} WHERE time >= \'{time_before}\' AND time < \'{time_after}\''  # Запрос в Influx
         print('query= ', query)
 
         result = client.query(query)

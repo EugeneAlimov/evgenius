@@ -7,20 +7,16 @@ excelFileSubmitButton.disabled=true; // excel афйла на распарсив
 let excelFileInput = document.getElementById('excelFileInput'); // получение объекта input-a отправки на распарсивание
 let excelFileInputValue = excelFileInput.value; // excel файла и длины строки содержимого объекта
 
-excelFileInput.addEventListener('change', hideExcelFileSubmitButton); // как произойдет изменение в форме вызов функции
+excelFileInput.addEventListener('change', disableExcelFileSubmitButton); // как произойдет изменение в форме вызов функции
                                                                       // включение кнопки
 // Включение кнопки отправки excel файла если содержимое инпута изменится и будет > 0
-
-function hideExcelFileSubmitButton() {
+function disableExcelFileSubmitButton() {
     excelFileInputValue = excelFileInput.value;
     if(excelFileInputValue.length > 0) {
         excelFileSubmitButton.disabled=false
-    };
-};
-
-
+    }
+}
 //POST зарос на сервер для выбора из какой группы читать теги
-
  $(document).on('change', '.inputGroupTagsSelect', function(e) {         // при событии на элементе формы (изменении)
     e.preventDefault();                                                   // сброс стандартного поведения
 
@@ -42,38 +38,50 @@ function hideExcelFileSubmitButton() {
                     "<label class=\"custom-control-label\" for=" + key + ">" + key + " " + data[key] +
                     "</label></div>"
                         );
-                    };
+                    }
                 }
             });
 });
 
 
 // POST зарос на сервер для формирования SQL запроса в InfluxDB
-$(document).on('click', '.ajaxClick', function(e) {
+$(document).on('submit', '#sqlRequestToInflux', function (e) {
     e.preventDefault();
 
-        let newUrl = $('#sqlRequestToInflux').attr('action');
+    let timeClientFieldFrom = document.getElementById('timeBefore');
+    let timeClientUtcValueFrom = new Date(timeClientFieldFrom.value).toISOString();
 
-            $.ajax({
-                url: newUrl,
-                data: $('#sqlRequestToInflux').serialize(),
-                method: 'POST',
-                success: function() {
-                    console.log('ajax sql influx DONE');
-                }
-            });
+    let timeClientFieldTo = document.getElementById('timeAfter');
+    let timeClientUtcValueTo = new Date(timeClientFieldTo.value).toISOString();
+
+    let submitInfluxQuery = new FormData($('#sqlRequestToInflux')[0]);
+    submitInfluxQuery.append('timeClientUtcValueFrom', timeClientUtcValueFrom);
+    submitInfluxQuery.append('timeClientUtcValueTo', timeClientUtcValueTo);
+
+
+    let urlSubmitInfluxQuery = $('#sqlRequestToInflux').attr('action');
+
+    $.ajax({
+        url: urlSubmitInfluxQuery,
+        data: submitInfluxQuery,
+        type: 'POST',
+        contentType: false,
+        processData: false
+
+    })
+        .done(console.log('send'))
 });
 
 
 // Перечень выбранных тегов
-$(document).on('click', '.tagsSelected', function() {                // по клику на кнопке "Продлжить"
-    let checkboxes = $('.checkboxes');                              // получаем содержимое всех чеубоксов
+$(document).on('click', '.tagsSelected', function() {             // по клику на кнопке "Продлжить"
+    let checkboxes = $('.checkboxes');                                          // получаем содержимое всех чеубоксов
 
     for (let index = 0; index < checkboxes.length; index++) {       // список уникальных тегов, чтобы не было повторов
         if (checkboxes[index].checked) {
             list.add(checkboxes[index].value);                      // добавляются в Set значения из checkboxes
-        };
-    };
+        }
+    }
     tagsListForInfluxGenerator();
 });
 
@@ -85,8 +93,8 @@ $(document).on('click', '.tagsDelete', function() {
     for (let index = 0; index < checkboxes.length; index++) {
         if (checkboxes[index].checked) {
             list.delete(checkboxes[index].value);                   // Удаляются из Set содержимое выбранных checkboxes
-        };
-    };
+        }
+    }
     tagsListForInfluxGenerator();
 });
 
@@ -103,9 +111,9 @@ function tagsListForInfluxGenerator() {
                     "<label class=\"custom-control-label\" for=" + i + ">" + i +
                     "</label></div>"
                 );
-            };
+            }
         $('#hiddenInput').val(chBoxesChecked);          // скрытый input, содержимое готорого отправляется ajax в influx
-    };
+    }
 
 // обработка элементов, которые были динамически добавлены на страницу
 // якобы рабочая
@@ -131,7 +139,7 @@ function tagsListForInfluxGenerator() {
 
         let layout = {
             title: 'multiple y-axes example',
-//            width: 1800,
+           width: 1920,
             xaxis: {domain: [0.3, 0.7]},
 
         yaxis: {
@@ -147,7 +155,7 @@ function tagsListForInfluxGenerator() {
             anchor: 'y',
             overlaying: 'y',
 //            side: 'left',
-            position: 0.15
+            position: 0.2
         },
 
         yaxis3: {
@@ -157,7 +165,7 @@ function tagsListForInfluxGenerator() {
             anchor: 'y',
             overlaying: 'y',
 //            side: 'right'
-            position: 0.0
+            position: 0.25
 
         },
 
@@ -168,8 +176,43 @@ function tagsListForInfluxGenerator() {
             anchor: 'y',
             overlaying: 'y',
 //            side: 'right',
-            position: 1.0
+            position: 0.3
         }
     };
         Plotly.newPlot('chart', data, layout, {scrollZoom: true}, {editable: true});
 }());
+
+let excelToCSVFileInput = document.getElementById('excelToCSVFileInput');
+
+function handleFile(e) {
+  var files = e.target.files, f = files[0];
+  var reader = new FileReader();
+  reader.onload = function(e) {
+      var data = new Uint8Array(e.target.result);
+      var workbook = XLSX.read(data, {type: 'array'});
+
+          console.log('открыт файл')
+
+          var first_sheet_name = workbook.SheetNames[0];
+          var address_of_cell = 'A1';
+
+          /* Get worksheet */
+          var worksheet = workbook.Sheets[first_sheet_name];
+
+          /* Find desired cell */
+          var desired_cell = worksheet[address_of_cell];
+
+          /* Get the value */
+          var desired_value = (desired_cell ? desired_cell.v : undefined);
+
+          console.log(desired_value)
+      };
+          reader.readAsArrayBuffer(f);
+  }
+excelToCSVFileInput.addEventListener('change', handleFile, false);
+
+
+// Client time to UTC time
+var d = new Date();
+var n = d.toISOString();
+console.log(n);

@@ -12,6 +12,7 @@
     <script type="text/javascript" src="{% static 'tail.DateTime-master/langs/tail.datetime-ru.js' %}"></script>
 
     <script type="text/javascript" src="{% static 'js/plotly-latest.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/sheetjs/xlsx.mini.js' %}"></script>
 </head>
 
 <body>
@@ -72,111 +73,39 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="service-prepare" enctype="multipart/form-data" action="{% url 'pars_tags_list' %}" method="post">
-                {% csrf_token %}
                 <div class="modal-body">
                     <div class="modal-footer">
-                        <input type="file" id="excelFileInput" class="excel-file" name="excel-file" accept=".xlsx">
+                        <form id="service-prepare" enctype="multipart/form-data" action="{% url 'pars_tags_list' %}" method="post">{% csrf_token %}
+                            <span>Загрузка тегов в систему</span>
+                            <input type="file" id="excelFileInput" class="excel-file" name="excel-file" accept=".xlsx">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                            <button type="submit" id="excelFileSubmitButton" class="btn btn-primary" name="done" value="done">Готово</button>
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <span>Конвертировать список тегов в CSV</span>
+                        <input type="file" id="excelToCSVFileInput" class="excel-file" name="excel-file" accept=".xlsx">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                        <button type="submit" id="excelFileSubmitButton" class="btn btn-primary" name="done" value="done">Готово</button>
+                        <button type="submit" id="excelToCSVFileSubmitButton" class="btn btn-primary" name="done" value="done">Готово</button>
                     </div>
                 </div>
-            </form>
         </div>
     </div>
 </div>
 
 
-<!--ajax на сервер со списко тегов для запроса в influxDB-->
+<!--ajax на сервер со списком тегов для запроса в influxDB-->
 <form id="sqlRequestToInflux" enctype="multipart/form-data" action="{% url 'tags_influx_prepare' %}" method="post">{% csrf_token %}
-
-
-        <input type="text" id="timeBefore" class="tail-datetime-field" name="dateTimeFrom" placeholder="Дата и время 'C'">
-    <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function(){
-            tail.DateTime(".tail-datetime-field", {
-                animate: true,
-                classNames: false,
-                closeButton: true,
-                dateFormat: "YYYY-mm-dd",
-                dateStart: false,
-                dateRanges: [],
-                dateBlacklist: true,
-                dateEnd: new Date(Date.now()),
-                locale: "ru",
-                position: "bottom",
-                rtl: "auto",
-                startOpen: false,
-                stayOpen: false,
-                time12h: false,
-                timeFormat: "HH:ii:ss",
-                timeHours: true,
-                timeMinutes: true,
-                timeSeconds: true,
-                timeIncrement: true,
-                timeStepHours: 1,
-                timeStepMinutes: 1,
-                timeStepSeconds: 1,
-                today: true,
-                tooltips: [],
-                viewDefault: "days",
-                viewDecades: false,
-                viewYears: true,
-                viewMonths: true,
-                viewDays: true,
-                weekStart: 1
-            });
-        });
-
-    </script>
-
+    <input type="text" id="timeBefore" class="tail-datetime-field" name="dateTimeFrom" placeholder="Дата и время 'C'">
     <input type="text" id="timeAfter" class="tail-datetime-field" name="dateTimeAfter" placeholder="Дата и время 'ПО'">
-    <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function(){
-            tail.DateTime(".tail-datetime-field", {
-                animate: true,
-                classNames: false,
-                closeButton: true,
-                dateFormat: "YYYY-mm-dd",
-                dateStart: false,
-                dateRanges: [],
-                dateBlacklist: true,
-                dateEnd: new Date(Date.now()),
-                locale: "ru",
-                position: "bottom",
-                rtl: "auto",
-                startOpen: false,
-                stayOpen: false,
-                time12h: false,
-                timeFormat: "HH:ii:ss",
-                timeHours: true,
-                timeMinutes: true,
-                timeSeconds: true,
-                timeIncrement: true,
-                timeStepHours: 1,
-                timeStepMinutes: 1,
-                timeStepSeconds: 1,
-                today: true,
-                tooltips: [],
-                viewDefault: "days",
-                viewDecades: false,
-                viewYears: true,
-                viewMonths: true,
-                viewDays: true,
-                weekStart: 1
-            });
-        });
-
-    </script>
-
+    <button type="button" class="utcTime">время в UTC</button>
     <br>
-
     <div>
     <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="modal" data-target="#exampleModalScrollable">
         Выбор тегов
     </button>
     </div>
-
     <br>
     <div>
     <div class="card border-info mb-3" style="width: 18rem;">
@@ -191,7 +120,7 @@
     <input type="hidden" id="hiddenInput" class="hujas" name="list" value="">
     <br>
     <br>
-    <button type="button" id="submit_btn_category" class="ajaxClick">Готово</button>
+    <button type="submit" id="submit_btn_influx_query" class="ajaxClick">Готово</button>
 </form>
 
 
@@ -247,6 +176,7 @@
 <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
 <script src="{% static 'js/popper.min.js' %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/date-time.js' %}"></script>
 <script src="{% static 'js/AJAXscript.js' %}"></script>
 
 
