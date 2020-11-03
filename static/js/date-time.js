@@ -33,7 +33,6 @@ document.addEventListener("DOMContentLoaded", function(){
             });
         });
 
-// Client time to UTC time
 
 
 
