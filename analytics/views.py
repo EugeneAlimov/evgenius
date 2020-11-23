@@ -109,9 +109,10 @@ def tags_influx_prepare(request):
             item = []
             for i in s:
                 item.append(i[element])
+                print(i)
             result_response[element] = item
         s.clear()
-        print(result_response)
+        # print(result_response)
         response = {'result': result_response}
         return JsonResponse(response, safe=False)
 
