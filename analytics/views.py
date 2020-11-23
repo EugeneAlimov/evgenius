@@ -1,4 +1,5 @@
 # # Create your views here.
+from django.core import serializers
 from django.http import JsonResponse, HttpResponse
 import plotly.graph_objects as go
 from analytics.models import *
@@ -9,7 +10,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.utils import get_column_letter
 from django.core.exceptions import ObjectDoesNotExist
 from influxdb import InfluxDBClient
-from datetime import datetime as dt, timedelta
+# from datetime import datetime as dt, timedelta
 
 
 def pars_tags_list(request):
@@ -59,13 +60,16 @@ def pars_tags_list(request):
 
 def group_prepare(request):
     """Принимаем AJAX от клиента с названием группы по которой нужно вывести список тегов и комментариев
-    принадлежащих к этой группе, фильтруем и создаем словарь с парами имя - комментарий"""
+    принадлежащих к этой группе, фильтруем и создаем словарь с парами имя - комментарий, присвиваем в data и отправляем
+    обратно JsonResponse(data)"""
     if request.method == 'POST':
         data = request.POST
+        print(data)
         tags_comments_list = {}
         for e in Tags.objects.filter(group=Group.objects.get(name_group=data.get('groupList'))):
-            tags_comments_list[e.name_tag] = str(e.comment)
-            data = tags_comments_list
+            tags_comments_list[e.name_tag] = e.comment, e.data_type
+        data = tags_comments_list
+        print(data)
         return JsonResponse(data)
 
 
@@ -74,36 +78,42 @@ def tags_influx_prepare(request):
 
     if request.method == 'POST':
         influx_data = request.POST
-        print(influx_data)
+        # print(influx_data)
 
         influx_query_tags = influx_data.get('list')
+        list_influx_query_tags = influx_query_tags.split(',')
+        list_influx_query_tags.append('time')
         influx_query_tags = ','.join('"{0}"'.format(w) for w in influx_query_tags.split(','))  # генератор списка тегов
 
         time_before = influx_data.get('timeClientUtcValueFrom')  # timeFrom в UTC
         time_after = influx_data.get('timeClientUtcValueTo')  # timeTo в UTC
-        print(time_before, time_after)
 
         bucket = "line"  # Имя базы данных
         measurement = "line"  # Имя измерения
 
         client = InfluxDBClient('localhost', 8086, 'root', 'root')  # Подключение к базе. В будущем нужно сделать шаблон
+        client.create_database(bucket)
         # внесения настроек подключения к базе. Создать модель с настройками и делать из нее выборку
         list_database = client.get_list_database()  # Список баз данных
         client.switch_database(bucket)  # Переключение на нужную базу
 
         query = f'SELECT {influx_query_tags} FROM {bucket}."autogen".{measurement} WHERE time >= \'{time_before}\' AND time < \'{time_after}\''  # Запрос в Influx
-        print('query= ', query)
 
-        result = client.query(query)
-        print(result)
+        result = client.query(query).get_points()
+        s = []
+        result_response = {}
+        for items in result:
+            s.append(items)
 
-        response = {'fsdf': 'fdsfr'}
+        for element in list_influx_query_tags:
+            item = []
+            for i in s:
+                item.append(i[element])
+            result_response[element] = item
+        s.clear()
+        print(result_response)
+        response = {'result': result_response}
         return JsonResponse(response, safe=False)
-        # group = Group.objects.all()
-        # tags = Tags.objects.all()
-        # comment = Tags.objects.all()
-        # return render(request, 'analytics/analytics.html', context={'plot_div': chart(), 'group': group, 'tags': tags,
-        #                                                             'comment': comment}, )
 
 
 def analytics_render(request):
@@ -173,11 +183,3 @@ def chart():
     fig.update_layout(title_text="multiple y-axes example", width=1800, )
 
     return fig.to_html('plot_div')
-
-# def category_adding(request):
-#     if request.method == 'POST':
-#         hujata = request.POST
-#         form_name = hujata.get('huname')
-#         print(hujata, form_name)
-#         hujata = {'response': 'from django'}
-#     return JsonResponse(hujata)

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'analytics',
     'home',
+    'settings',
 ]
 
 MIDDLEWARE = [

@@ -21,8 +21,9 @@ client.switch_database(bucket)                                                  
 # print(list_database)
 # print(list_measure)
 
-query = f'SELECT "time_pulse", "Clock_0.5Hz", "pnIN_ConveyorRunning" FROM {bucket}."autogen".{measurement} WHERE time' \
-        f'>= \'2020-10-19T17:42:16.718260Z\' AND time < \'2020-10-19T17:46:16.873558Z\''
+query = f'SELECT "pnIN_ConveyorRunning" FROM {bucket}."autogen".{measurement} WHERE time < now() - 1m'
+# query = f'SELECT "time_pulse", "Clock_0.5Hz", "pnIN_ConveyorRunning" FROM {bucket}."autogen".{measurement} WHERE time' \
+#         f'>= \'2020-10-19T17:42:16.718260Z\' AND time < \'2020-10-19T17:46:16.873558Z\''
 result = client.query(query)
 print(result)
 # 2020-10-19 00:00:00
