@@ -64,12 +64,12 @@ def group_prepare(request):
     обратно JsonResponse(data)"""
     if request.method == 'POST':
         data = request.POST
-        print(data)
+        # print(data)
         tags_comments_list = {}
         for e in Tags.objects.filter(group=Group.objects.get(name_group=data.get('groupList'))):
             tags_comments_list[e.name_tag] = e.comment, e.data_type
         data = tags_comments_list
-        print(data)
+        # print(data)
         return JsonResponse(data)
 
 
@@ -108,11 +108,14 @@ def tags_influx_prepare(request):
         for element in list_influx_query_tags:
             item = []
             for i in s:
+                if str(i[element]) == 'True':
+                    i[element] = 1
+                elif str(i[element]) == 'False':
+                    i[element] = 0
                 item.append(i[element])
-                print(i)
             result_response[element] = item
         s.clear()
-        # print(result_response)
+        print(result_response)
         response = {'result': result_response}
         return JsonResponse(response, safe=False)
 

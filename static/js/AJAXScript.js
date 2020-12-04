@@ -2,24 +2,6 @@ let targetIdBuffer = ''
 let chBoxObjSelectList = {}
 const checkboxes = $('.checkboxesTagsSelected');
 
-
-// let excelFileSubmitButton = document.getElementById('excelFileSubmitButton'); // отключение по умолчанию кнопки отправки
-// excelFileSubmitButton.disabled=true; // excel афйла на распарсивание
-
-// let excelFileInput = document.getElementById('excelFileInput'); // получение объекта input-a отправки на распарсивание
-// let excelFileInputValue = excelFileInput.value; // excel файла и длины строки содержимого объекта
-//
-// excelFileInput.addEventListener('change', disableExcelFileSubmitButton); // как произойдет изменение в форме вызов функции
-// включение кнопки
-// Включение кнопки отправки excel файла если содержимое инпута изменится и будет > 0
-// function disableExcelFileSubmitButton() {
-//     excelFileInputValue = excelFileInput.value;
-//     if(excelFileInputValue.length > 0) {
-//         excelFileSubmitButton.disabled=false
-//     }
-// }
-
-
 // при очередном обновлении списка отмечает галочками теги, которые были выбраны ранее
 function TagsCheckBox() {
     let element = document.getElementsByClassName('checkboxes')
@@ -123,18 +105,24 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
             }
             for (let item of myObj) {
                 for (let i in chBoxObjSelectList) {
+                    let itemArr = []
+                    itemArr = item[i]
+                    // console.log(i)
+                    // console.log(Object.values(chBoxObjSelectList)[0])
+                    // console.log(itemArr)
+                    console.log(Object.values(chBoxObjSelectList)[yaxis - 1])
                     let trace = {}
                     let overlaying = ''
                     let position
-                    let positionAnalog = [0, 0.035, 0.07, 0.105, 0.14]
+                    let positionAnalog = [0, 0.035, 0.07, 0.105, 0.14] // шаг 0,035
                     let positionBool = [0.895, 0.93, 0.965, 1]
                     trace['x'] = item['time']
                     trace['y'] = item[i]
                     trace['yaxis'] = `y${yaxis}`
                     trace['name'] = i
-                    trace['type'] = 'scatter'
-                    if (Object.values(chBoxObjSelectList)[0] === 'Bool') { // получение типа данных и проверка на соответствие bool
-                        trace['line'] = {shape: 'hv'}
+                    trace['type'] = 'line'
+                    if (Object.values(chBoxObjSelectList)[yaxis - 1] === 'Bool') { // получение типа данных и проверка на соответствие bool
+                        trace['line'] = {shape: 'vh'}
                     } else {
                         trace['line'] = {shape: 'spline'}
                     }
@@ -144,21 +132,21 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
                     } else {
                         overlaying = 'y'
                     }
-                    if (Object.values(chBoxObjSelectList)[0] === 'Bool') {
+                    if (Object.values(chBoxObjSelectList)[yaxis - 1] === 'Bool') {
                         position = positionBool[boolCounter]
-                        console.log(boolCounter)
                         boolCounter += 1
                     } else {
                         position = positionAnalog[analogCounter]
                         analogCounter += 1
                     }
-                    layoutConstruct = {'title': i, 'overlaying': overlaying, 'position': position}
+                    // console.log(position)
+                    layoutConstruct = {'title': i, 'overlaying': overlaying, 'position': position, side: 'left'}
                     layout[`yaxis${yaxis}`] = layoutConstruct
                     yaxis += 1
                 }
             }
             data = d
-
+            // console.log(data)
             Plotly.newPlot('chart', data, layout, {scrollZoom: true}, {editable: true}, {autosize: true})
         }
     });
@@ -179,6 +167,8 @@ $(document).on('click', '.checkboxes', function () {
     } else {
         delete chBoxObjSelectList[chId]
     }
+    // console.log('chBoxObjSelectList ', chBoxObjSelectList)
+
 })
 
 // Редактирование списка выбранных тегов (удаление ненужных) из списка для influx и снятие галочек в списке тегов из групп
@@ -213,35 +203,6 @@ function tagsListForInfluxGenerator() {
     $('#hiddenInput').val(chBoxesChecked);      // скрытый input, содержимое готорого отправляется ajax-ом в influx
 }
 
-
-// let excelToCSVFileInput = document.getElementById('excelToCSVFileInput');
-//
-// function handleFile(e) {
-//   let files = e.target.files;
-//   let f = files[0];
-//   let reader = new FileReader();
-//   reader.onload = function(e) {
-//       let data = new Uint8Array(e.target.result);
-//       let workbook = XLSX.read(data, {type: 'array'});
-//
-//           console.log('открыт файл')
-//
-//           let first_sheet_name = workbook.SheetNames[0];
-//           let address_of_cell = 'A1';
-//
-//           /* Get worksheet */
-//           let worksheet = workbook.Sheets[first_sheet_name];
-//
-//           /* Find desired cell */
-//           let desired_cell = worksheet[address_of_cell];
-//
-//           /* Get the value */
-//           let desired_value = (desired_cell ? desired_cell.v : undefined);
-//
-//           console.log(desired_value)
-//       };
-//           reader.readAsArrayBuffer(f);
-//   }
-// excelToCSVFileInput.addEventListener('change', handleFile, false);
-
+// console.log('log')
+// console.log('moreLog')
 
