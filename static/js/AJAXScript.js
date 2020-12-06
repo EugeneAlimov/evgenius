@@ -107,15 +107,12 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
                 for (let i in chBoxObjSelectList) {
                     let itemArr = []
                     itemArr = item[i]
-                    // console.log(i)
-                    // console.log(Object.values(chBoxObjSelectList)[0])
-                    // console.log(itemArr)
                     console.log(Object.values(chBoxObjSelectList)[yaxis - 1])
                     let trace = {}
                     let overlaying = ''
                     let position
-                    let positionAnalog = [0, 0.035, 0.07, 0.105, 0.14] // шаг 0,035
-                    let positionBool = [0.895, 0.93, 0.965, 1]
+                    let positionAnalog = [0, 0.035, 0.07, 0.105, 0.14, 0.175] // шаг 0,035
+                    let positionBool = [0.825, 0.86, 0.895, 0.93, 0.965, 1]
                     trace['x'] = item['time']
                     trace['y'] = item[i]
                     trace['yaxis'] = `y${yaxis}`
@@ -139,14 +136,14 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
                         position = positionAnalog[analogCounter]
                         analogCounter += 1
                     }
-                    // console.log(position)
+                    console.log(position)
                     layoutConstruct = {'title': i, 'overlaying': overlaying, 'position': position, side: 'left'}
                     layout[`yaxis${yaxis}`] = layoutConstruct
                     yaxis += 1
                 }
             }
+
             data = d
-            // console.log(data)
             Plotly.newPlot('chart', data, layout, {scrollZoom: true}, {editable: true}, {autosize: true})
         }
     });
@@ -167,8 +164,6 @@ $(document).on('click', '.checkboxes', function () {
     } else {
         delete chBoxObjSelectList[chId]
     }
-    // console.log('chBoxObjSelectList ', chBoxObjSelectList)
-
 })
 
 // Редактирование списка выбранных тегов (удаление ненужных) из списка для influx и снятие галочек в списке тегов из групп
