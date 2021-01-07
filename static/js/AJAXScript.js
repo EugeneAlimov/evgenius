@@ -119,9 +119,9 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
                     trace['name'] = i
                     trace['type'] = 'line'
                     if (Object.values(chBoxObjSelectList)[yaxis - 1] === 'Bool') { // получение типа данных и проверка на соответствие bool
-                        trace['line'] = {shape: 'vh'}
+                        trace['line'] = {shape: 'vh'}                               //Если bool установить тип графика "ступенчатый"
                     } else {
-                        trace['line'] = {shape: 'spline'}
+                        trace['line'] = {shape: 'spline'}                           //Если НЕ bool установить тип графика "сглаженная лииния"
                     }
                     d.push(trace)
                     if (yaxis === 1) {

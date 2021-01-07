@@ -81,10 +81,11 @@ def tags_influx_prepare(request):
         # print(influx_data)
 
         influx_query_tags = influx_data.get('list')
+        print(influx_query_tags)
         list_influx_query_tags = influx_query_tags.split(',')
         list_influx_query_tags.append('time')
         influx_query_tags = ','.join('"{0}"'.format(w) for w in influx_query_tags.split(','))  # генератор списка тегов
-
+        print(influx_query_tags)
         time_before = influx_data.get('timeClientUtcValueFrom')  # timeFrom в UTC
         time_after = influx_data.get('timeClientUtcValueTo')  # timeTo в UTC
 
