@@ -68,7 +68,6 @@ function handleFile(e) {
                     // console.log(cell)
                     const arrException = ['InOut', 'Output', 'Static']
                     if (arrException.includes(cell)) {
-                        console.log( i, cell)
                         continue toStart
                         } else {
                             let A_X_Cell = worksheet[`A${i}`]
@@ -83,9 +82,8 @@ function handleFile(e) {
                             let dataType = ''
                             if (B_X_Value === 'Bool') {
                             dataType = 'X'
-                            if (C_X_Value.includes('.')) {
-                                C_X_Value = C_X_Value + '.0'
-                                }
+                            if (!C_X_Value.includes('.')) {C_X_Value = C_X_Value + '.0'}
+                                // else {C_X_Value = C_X_Value + '.0'}
                             } else  if (B_X_Value === 'Int') {
                                 dataType = 'DI'
                             } else  if (B_X_Value === 'Real') {
