@@ -37,12 +37,18 @@ def pars_tags_list(request):
             Tags.objects.get(name_tag=name_tag)
         except ObjectDoesNotExist:
             """"Для случая когда теги импортированы из таблицы тегов"""
-            if (ws.cell(row=1, column=4)).value.startswith('%'):
+            comment_tag = (ws.cell(row=i, column=5)).value
+            if (ws.cell(row=i, column=4)).value.startswith('%'):
+                if str(comment_tag).capitalize == 'Spare':
+                    continue
                 tag_table = (ws.cell(row=i, column=2)).value
                 data_type = (ws.cell(row=i, column=3)).value
                 address_tag = (ws.cell(row=i, column=4)).value
             else:
                 """"Для случая когда теги полуены из DB блоков"""
+                except_list = ['InOut', 'Input', 'Output', 'Struct', 'Static']
+                if name_tag in except_list:
+                    continue
                 data_type = (ws.cell(row=i, column=2)).value
                 tag_table = (ws.cell(row=i, column=4)).value
                 if data_type == 'Bool':
@@ -52,7 +58,6 @@ def pars_tags_list(request):
                 elif data_type == 'Int' or 'Word':
                     x = '.DBW'
                 address_tag = f'{(ws.cell(row=i, column=4)).value}{x}{(ws.cell(row=i, column=3)).value}'
-            comment_tag = (ws.cell(row=i, column=5)).value
 
             save_set_of_tags = Tags(group=group, name_tag=name_tag, tag_table=tag_table, data_type=data_type,
                                     address=address_tag, comment=comment_tag)

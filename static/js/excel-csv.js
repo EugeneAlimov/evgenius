@@ -40,9 +40,12 @@ function handleFile(e) {
             const D2cell = (worksheet['D2'] ? worksheet['D2'].v : undefined)
             if (D2cell.includes('%')) {
                 while (i <= listRange) {
+                    let A_X_Cell = worksheet[`A${i}`]
+                    if (A_X_Cell === 'Spare') {
+                        continue
+                    }
                     let cellArr = []
                     let D_X_Cell = worksheet[`D${i}`]
-                    let A_X_Cell = worksheet[`A${i}`]
                     let D_X_Value = (D_X_Cell ? D_X_Cell.v : undefined)
                     let A_X_Value = (A_X_Cell ? A_X_Cell.v : undefined)
                     let A_Cell_CSV = D_X_Value.slice(1)
@@ -59,7 +62,7 @@ function handleFile(e) {
                 for (i; i < listRange; i++) {
                     let cellArr = []
                     let cell = (worksheet[`A${i}`] ? worksheet[`A${i}`].v : undefined)
-                    const arrException = ['InOut', 'Output', 'Static']
+                    const arrException = ['InOut', 'Output','Struct', 'Static']
                     if (!arrException.includes(cell)) {
                             let A_X_Cell = worksheet[`A${i}`]
                             let B_X_Cell = worksheet[`B${i}`]
