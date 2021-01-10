@@ -1,16 +1,11 @@
 # # Create your views here.
-from django.core import serializers
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 import plotly.graph_objects as go
 from analytics.models import *
 from django.shortcuts import render
-from django.core.files.storage import FileSystemStorage
-from openpyxl import load_workbook, Workbook, worksheet
-from openpyxl.worksheet.worksheet import Worksheet
-from openpyxl.utils import get_column_letter
+from openpyxl import load_workbook
 from django.core.exceptions import ObjectDoesNotExist
 from influxdb import InfluxDBClient
-# from datetime import datetime as dt, timedelta
 
 
 def pars_tags_list(request):
@@ -28,7 +23,6 @@ def pars_tags_list(request):
     группе соотношением один-комногим
     Если файл с тегами не содержит нужные данные (пустые колонки или ячейки (кроме комментариев)) вывести уведомление 
     об этом"""
-
     for i in range(1, ws.max_row + 1):
         name_group = (ws.cell(row=i, column=6)).value  # присваиваем переменной name_group значение ячейки столбца group
         try:
@@ -37,25 +31,34 @@ def pars_tags_list(request):
             save_set_of_groups = Group(name_group=name_group)  # сохраняем содержимое переменной name_group в базу
             save_set_of_groups.save()
         group = Group.objects.get(name_group=name_group)  # заносим в переменную объект группы для текущей записи тега
-        # чтобы создать связь один ко многим с таблицей Tags
+                                                            # чтобы создать связь один ко многим с таблицей Tags
         name_tag = (ws.cell(row=i, column=1)).value  # выбираем ячейки из таблицы
         try:
             Tags.objects.get(name_tag=name_tag)
         except ObjectDoesNotExist:
-            tag_table = (ws.cell(row=i, column=2)).value
-            data_type = (ws.cell(row=i, column=3)).value
-            address_tag = (ws.cell(row=i, column=4)).value
+            """"Для случая когда теги импортированы из таблицы тегов"""
+            if (ws.cell(row=1, column=4)).value.startswith('%'):
+                tag_table = (ws.cell(row=i, column=2)).value
+                data_type = (ws.cell(row=i, column=3)).value
+                address_tag = (ws.cell(row=i, column=4)).value
+            else:
+                """"Для случая когда теги полуены из DB блоков"""
+                data_type = (ws.cell(row=i, column=2)).value
+                tag_table = (ws.cell(row=i, column=4)).value
+                if data_type == 'Bool':
+                    x = '.DBX'
+                elif data_type == 'Real' or 'Time_Of_Day' or 'Date_And_Time':
+                    x = '.DBD'
+                elif data_type == 'Int' or 'Word':
+                    x = '.DBW'
+                address_tag = f'{(ws.cell(row=i, column=4)).value}{x}{(ws.cell(row=i, column=3)).value}'
             comment_tag = (ws.cell(row=i, column=5)).value
+
             save_set_of_tags = Tags(group=group, name_tag=name_tag, tag_table=tag_table, data_type=data_type,
                                     address=address_tag, comment=comment_tag)
-            save_set_of_tags.save()  # сохраняем модель Tags
+            save_set_of_tags.save()      # сохраняем модель Tags
 
-        fs = FileSystemStorage()
-    group = Group.objects.all()
-    tags = Tags.objects.all()
-    comment = Tags.objects.all()
-    return render(request, 'analytics/analytics.html', context={'plot_div': chart(), 'group': group, 'tags': tags,
-                                                                'comment': comment}, )
+    return render(request, 'settings/settings.html')
 
 
 def group_prepare(request):
@@ -64,12 +67,10 @@ def group_prepare(request):
     обратно JsonResponse(data)"""
     if request.method == 'POST':
         data = request.POST
-        # print(data)
         tags_comments_list = {}
         for e in Tags.objects.filter(group=Group.objects.get(name_group=data.get('groupList'))):
             tags_comments_list[e.name_tag] = e.comment, e.data_type
         data = tags_comments_list
-        # print(data)
         return JsonResponse(data)
 
 
@@ -78,8 +79,6 @@ def tags_influx_prepare(request):
 
     if request.method == 'POST':
         influx_data = request.POST
-        # print(influx_data)
-
         influx_query_tags = influx_data.get('list')
         print(influx_query_tags)
         list_influx_query_tags = influx_query_tags.split(',')

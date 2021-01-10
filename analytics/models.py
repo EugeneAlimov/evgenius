@@ -22,8 +22,8 @@ class Tags(models.Model):
                               verbose_name='Группа тегов')
     name_tag = models.CharField(max_length=100, blank=True, null=True, default=None, verbose_name='Имя тега')
     tag_table = models.CharField(max_length=100, blank=True, null=True, default=None, verbose_name='Таблица тегов')
-    data_type = models.CharField(max_length=100, blank=True, null=True, default=None, verbose_name='Тип данных')
     address = models.CharField(max_length=100, blank=True, null=True, default=None, verbose_name='Адрес в памяти')
+    data_type = models.CharField(max_length=100, blank=True, null=True, default=None, verbose_name='Тип данных')
     comment = models.CharField(max_length=100, blank=True, null=True, default=None, verbose_name='Комментарий')
 
     def __str__(self):

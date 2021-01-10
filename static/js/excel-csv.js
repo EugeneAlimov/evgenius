@@ -14,11 +14,6 @@ function disableExcelFileSubmitButton() {
     }
 }
 
-
-
-
-
-
 let excelToCSVFileInput = document.getElementById('excelToCSVFileInput')
 
 function handleFile(e) {
@@ -38,7 +33,6 @@ function handleFile(e) {
         let worksheet = workbook.Sheets[first_sheet_name]                       // Get worksheet
         let desired_cell = worksheet[address_of_cell]                           // Find desired cell
 
-        let desired_value = (worksheet[desired_cell] ? worksheet[desired_cell].v : undefined)   // Get the value
         let range = XLSX.utils.decode_range(worksheet['!ref'])                                  // Get the range
         let listRange = (Object.values(range)[1]).r
         let i = 1
@@ -62,14 +56,11 @@ function handleFile(e) {
                 XLSX.utils.book_append_sheet(CSV_book, CSV_sheet)
                 XLSX.writeFile(CSV_book, 'workbook.csv', {bookType:"csv", FS:"\t"})
             } else {
-                toStart: for (i; i < listRange; i++) {
+                for (i; i < listRange; i++) {
                     let cellArr = []
                     let cell = (worksheet[`A${i}`] ? worksheet[`A${i}`].v : undefined)
-                    // console.log(cell)
                     const arrException = ['InOut', 'Output', 'Static']
-                    if (arrException.includes(cell)) {
-                        continue toStart
-                        } else {
+                    if (!arrException.includes(cell)) {
                             let A_X_Cell = worksheet[`A${i}`]
                             let B_X_Cell = worksheet[`B${i}`]
                             let C_X_Cell = worksheet[`C${i}`]

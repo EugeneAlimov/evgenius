@@ -49,11 +49,15 @@ $(document).on('click', '.listGroup', function (e) {    // при событии
             listTagsStyle.css('width', `375px`,);
             listTagsStyle.css('overflow-y', `scroll`);
             for (let key in data) {                     // на пары ключ-значение и отрисовать список
+                let comment = ` - ${data[key][0]}`
+                if (comment === ' - null') {
+                        comment = ''
+                    }
                 listTagsStyle.append(
                     `<li class="tags-chek-box-block checkbox-hover">
                         <label class="checkbox-other">
                         <input type="checkbox" class="checkboxes" id="${key}" value="${data[key][1]}">
-                        <span class="tags-chek-box-label">${key} - ${data[key][0]}</span>
+                        <span class="tags-chek-box-label">${key}${comment}</span>
                         </label>
                         </li>`
                 );
@@ -197,7 +201,4 @@ function tagsListForInfluxGenerator() {
     }
     $('#hiddenInput').val(chBoxesChecked);      // скрытый input, содержимое готорого отправляется ajax-ом в influx
 }
-
-// console.log('log')
-// console.log('moreLog')
 
