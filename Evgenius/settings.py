@@ -12,6 +12,37 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+# Celery settings
+
+# CELERY_BROKER_URL = 'redis://localhost:6379'
+
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+
+# Broker settings.
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+
+# List of modules to import when the Celery worker starts.
+imports = ('Evgenius.tasks',)
+
+# Using the database to store task state and results.
+# result_backend = 'db+sqlite:///results.db'
+# CELERY_RESULT_BACKEND = 'django-db'
+# CELERY_BROKER_URL = 'redis://h:p1f32b9a309b588283093e94d3a85d08e7263b9bb79572b25bd9ffcd6cec2f980@ec2-50-16-55-44.compute-1.amazonaws.com:23589'
+# task_annotations = {'tasks.add': {'rate_limit': '10/s'}}
+
+# CELERY_BROKER_URL = 'amqp://guest:guest@localhost'
+
+# : Only add pickle to this list if your broker is secured
+# : from unwanted access (see userguide/security.html)
+CELERY_ACCEPT_CONTENT = ['json']
+# result_backend = 'db+sqlite:///results.sqlite'
+# CELERY_TASK_SERIALIZER = 'json'
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -41,6 +72,9 @@ INSTALLED_APPS = [
     'analytics',
     'home',
     'settings',
+
+    'django_celery_results',
+    'celery_progress',
 ]
 
 MIDDLEWARE = [
