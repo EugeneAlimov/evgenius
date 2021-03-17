@@ -56,7 +56,7 @@ SECRET_KEY = 'j-gav!!worr)2=#j7zav%d#w)he3#tr=iashgu4r0_cb4!2_qt'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['evgenius', '127.0.0.1', '.pythonanywhere.com']
+ALLOWED_HOSTS = ['evgenius.hu', '192.168.0.121', 'localhost', '127.0.0.1', '.pythonanywhere.com']
 
 
 # Application definition
