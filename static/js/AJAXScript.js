@@ -95,6 +95,7 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
         processData: false,
         success: function (data) {
 
+            let axisColors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', '#1f77b4', '#ff7f0e']
             let yaxis = 1
             let boolCounter = 0
             let analogCounter = 0
@@ -105,18 +106,43 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
                 title: 'multiple y-axes example',
                 width: window.innerWidth / 100 * 98,
                 height: window.innerHeight / 100 * 78,
-                xaxis: {domain: [0.15, 0.85]}
+                xaxis: {domain: [0.15, 0.85], 'showgrid': false, rangeslider: {}},
+                rangeslider: {
+                    currentvalue: true,
+                    bgcolor: '#2ca02c',
+                    activebgcolor: '#2ca02c'
+                },
+                legend: {borderwidth: 0,
+                    xanchor: 'left',
+                    x: -0.02,
+                    y: -0.36,
+                    yanchor: 'top',
+                    valign: 'bottom',
+                    orientation: 'h',
+                    bgcolor: 'white',
+                    bordercolor: '#444',
+                    font: {
+                        family: '\"Open Sans\", verdana, arial, sans-serif',
+                        size: 12,
+                        color: '#2a3f5f'
+                        },
+                    traceorder: 'normal',
+                    itemsizing: 'trace',
+                    itemwidth: 30,
+                    itemclick: 'toggle',
+                    itemdoubleclick: 'toggleothers',
+                }
             }
             for (let item of myObj) {
                 for (let i in chBoxObjSelectList) {
                     let itemArr = []
                     itemArr = item[i]
-                    console.log(Object.values(chBoxObjSelectList)[yaxis - 1])
+                    // console.log(Object.values(chBoxObjSelectList)[yaxis - 1])
                     let trace = {}
                     let overlaying = ''
                     let position
-                    let positionAnalog = [0, 0.035, 0.07, 0.105, 0.14, 0.175] // шаг 0,035
-                    let positionBool = [0.825, 0.86, 0.895, 0.93, 0.965, 1]
+                    let positionAnalog = [0.0, 0.025, 0.05, 0.075, 0.1, 0.125] // шаг 0,028
+                    let positionBool = [1.0, 0.975, 0.95, 0.925, 0.9, 0.875] // шаг 0,03
                     trace['x'] = item['time']
                     trace['y'] = item[i]
                     trace['yaxis'] = `y${yaxis}`
@@ -125,7 +151,7 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
                     if (Object.values(chBoxObjSelectList)[yaxis - 1] === 'Bool') { // получение типа данных и проверка на соответствие bool
                         trace['line'] = {shape: 'vh'}                               //Если bool установить тип графика "ступенчатый"
                     } else {
-                        trace['line'] = {shape: 'spline'}                           //Если НЕ bool установить тип графика "сглаженная лииния"
+                        trace['line'] = {shape: 'vh'}                           //Если НЕ bool установить тип графика "сглаженная лииния"
                     }
                     d.push(trace)
                     if (yaxis === 1) {
@@ -140,17 +166,29 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
                         position = positionAnalog[analogCounter]
                         analogCounter += 1
                     }
-                    console.log(position)
-                    layoutConstruct = {'title': i, 'overlaying': overlaying, 'position': position, side: 'left'}
+                    // console.log(position)
+                    layoutConstruct = {
+                        'overlaying': overlaying,
+                        'tickangle': 270,
+                        'position': position,                        
+                        'tickfont': {color: axisColors[`${yaxis-1}`]},
+                        'showgrid': false,
+                        rangeslider: {}
+                        }
+                    console.log(layoutConstruct)
                     layout[`yaxis${yaxis}`] = layoutConstruct
                     yaxis += 1
                 }
             }
 
             data = d
-            Plotly.newPlot('chart', data, layout, {scrollZoom: true}, {editable: true}, {autosize: true})
+            Plotly.newPlot('chart', data, layout, {scrollZoom: true, autosize: false,
+                legend: {yanchor: 'auto', orientation: 'h', x: 0, y: -1, traceorder: 'normal', itemsizing: 'trace', xanchor: 'left', valign: 'middle'}, displaylogo: false, responsive: true, margin:{autoexpand: true}})
         }
-    });
+
+    });        let gd = document.getElementById('chart')
+console.log('gd.data ', gd)
+
 });
 
 // Список выбранных тегов для отправки в influx
@@ -202,3 +240,69 @@ function tagsListForInfluxGenerator() {
     $('#hiddenInput').val(chBoxesChecked);      // скрытый input, содержимое готорого отправляется ajax-ом в influx
 }
 
+
+
+
+// var ctx = document.getElementById('myChart');
+
+// var myChart = new Chart(ctx, {
+//     type: 'line',
+//     data: {
+//         datasets: [
+//             {
+//             data: [20, 50, 100, 75, 25, 0],
+//             label: 'Left dataset',
+
+//             // This binds the dataset to the left y axis
+//             yAxisID: 'left-y-axis'
+//         },
+//         {
+//             data: [0.1, 0.5, 1.0, 2.0, 1.5, 0],
+//             label: 'Right dataset',
+
+//             // This binds the dataset to the right y axis
+//             yAxisID: 'right-y-axis'
+//         },
+//         {
+//             data: [10, 15, 10, 22, 35, 20],
+//             label: 'Right dataset2222222',
+
+//             // This binds the dataset to the right y axis
+//             yAxisID: 'right22-y22-axis22'
+//         },
+//         {
+//             data: [180, 155, 140, 132, 125, 140],
+//             label: 'Right dataset55555',
+
+//             // This binds the dataset to the right y axis
+//             yAxisID: 'right55-y55-axis55'
+//         }
+//     ],
+//         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+//     },
+//     options: {
+//         scales: {
+//             yAxes: [{
+//                 id: 'left-y-axis',
+//                 type: 'linear',
+//                 position: 'left'
+//             },
+//             {
+//                 id: 'right-y-axis',
+//                 type: 'linear',
+//                 position: 'right'
+//             },
+//             {
+//                 id: 'right22-y22-axis22',
+//                 type: 'linear',
+//                 position: 'right'
+//             },
+//             {
+//                 id: 'right55-y55-axis55',
+//                 type: 'linear',
+//                 position: 'right'
+//             }
+//         ]
+//         }
+//     }
+// });

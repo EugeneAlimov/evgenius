@@ -102,17 +102,17 @@ def tags_influx_prepare(request):
         time_before = influx_data.get('timeClientUtcValueFrom')  # timeFrom в UTC
         time_after = influx_data.get('timeClientUtcValueTo')  # timeTo в UTC
 
-        bucket = "line"  # Имя базы данных
+        bucket = "CNC"  # Имя базы данных
         measurement = "line"  # Имя измерения
 
-        client = InfluxDBClient('localhost', 8086, 'root', 'root')  # Подключение к базе. В будущем нужно сделать шаблон
+        client = InfluxDBClient('192.168.2.163', 8086, 'root', 'root')  # Подключение к базе. В будущем нужно сделать шаблон
         client.create_database(bucket)
         # внесения настроек подключения к базе. Создать модель с настройками и делать из нее выборку
         list_database = client.get_list_database()  # Список баз данных
         client.switch_database(bucket)  # Переключение на нужную базу
 
         query = f'SELECT {influx_query_tags} FROM {bucket}."autogen".{measurement} WHERE time >= \'{time_before}\' AND time < \'{time_after}\''  # Запрос в Influx
-
+        print(query)
         result = client.query(query).get_points()
         s = []
         result_response = {}
