@@ -16,17 +16,17 @@ import os
 
 # CELERY_BROKER_URL = 'redis://localhost:6379'
 
-# CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-# CELERY_ACCEPT_CONTENT = ['application/json']
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_RESULT_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 
 # Broker settings.
-# CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
 
 # List of modules to import when the Celery worker starts.
-# imports = ('Evgenius.tasks',)
+imports = ('Evgenius.tasks',)
 
 # Using the database to store task state and results.
 # result_backend = 'db+sqlite:///results.db'
@@ -38,7 +38,7 @@ import os
 
 # : Only add pickle to this list if your broker is secured
 # : from unwanted access (see userguide/security.html)
-# CELERY_ACCEPT_CONTENT = ['json']
+CELERY_ACCEPT_CONTENT = ['json']
 # result_backend = 'db+sqlite:///results.sqlite'
 # CELERY_TASK_SERIALIZER = 'json'
 
@@ -56,7 +56,7 @@ SECRET_KEY = 'j-gav!!worr)2=#j7zav%d#w)he3#tr=iashgu4r0_cb4!2_qt'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.200', '192.168.0.121', 'evgenius.hu', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['evgenius', '127.0.0.1', '.pythonanywhere.com']
 
 
 # Application definition
