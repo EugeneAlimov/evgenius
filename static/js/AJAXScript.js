@@ -39,7 +39,8 @@ $(document).on('click', '.listGroup', function (e) {    // при событии
         contentType: false,
         processData: false,
 
-        success: function (data) {                              // когда данные успешно вернулись разобрать data
+        success: function (data) {
+            console.log('data', data)// когда данные успешно вернулись разобрать data
             $('#prime').hide()
             const listTagsStyle = $('.listTags')
             const namesArr = []
@@ -56,7 +57,7 @@ $(document).on('click', '.listGroup', function (e) {    // при событии
                 listTagsStyle.append(
                     `<li class="tags-chek-box-block checkbox-hover">
                         <label class="checkbox-other">
-                        <input type="checkbox" class="checkboxes" id="${key}" value="${data[key][1]}">
+                        <input type="checkbox" class="checkboxes" id="${key} - ${data[key][0]}" value="${data[key][1]}">
                         <span class="tags-chek-box-label">${key}${comment}</span>
                         </label>
                         </li>`
@@ -82,7 +83,6 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
 
     submitInfluxQuery.append('timeClientUtcValueFrom', timeClientUtcValueFrom);
     submitInfluxQuery.append('timeClientUtcValueTo', timeClientUtcValueTo);
-    // submitInfluxQuery.append('list', chBoxesChecked);
 
 
     let urlSubmitInfluxQuery = submitInfluxQueryForm.attr('action');
@@ -95,7 +95,20 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
         processData: false,
         success: function (data) {
 
-            let axisColors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', '#1f77b4', '#ff7f0e']
+            let axisColors = [
+                '#1f77b4',
+                '#ff7f0e',
+                '#2ca02c',
+                '#d62728',
+                '#9467bd',
+                '#8c564b',
+                '#e377c2',
+                '#7f7f7f',
+                '#bcbd22',
+                '#17becf',
+                '#1f77b4',
+                '#ff7f0e'
+            ]
             let yaxis = 1
             let boolCounter = 0
             let analogCounter = 0
@@ -137,7 +150,6 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
                 for (let i in chBoxObjSelectList) {
                     let itemArr = []
                     itemArr = item[i]
-                    // console.log(Object.values(chBoxObjSelectList)[yaxis - 1])
                     let trace = {}
                     let overlaying = ''
                     let position
@@ -147,7 +159,8 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
                     trace['y'] = item[i]
                     trace['yaxis'] = `y${yaxis}`
                     trace['name'] = i
-                    trace['type'] = 'line'
+                    trace['type'] = 'scattergl'
+                    trace['mode'] = 'line'
                     if (Object.values(chBoxObjSelectList)[yaxis - 1] === 'Bool') { // получение типа данных и проверка на соответствие bool
                         trace['line'] = {shape: 'vh'}                               //Если bool установить тип графика "ступенчатый"
                     } else {
@@ -166,7 +179,6 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
                         position = positionAnalog[analogCounter]
                         analogCounter += 1
                     }
-                    // console.log(position)
                     layoutConstruct = {
                         'overlaying': overlaying,
                         'tickangle': 270,
@@ -175,7 +187,6 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
                         'showgrid': false,
                         rangeslider: {}
                         }
-                    console.log(layoutConstruct)
                     layout[`yaxis${yaxis}`] = layoutConstruct
                     yaxis += 1
                 }
@@ -185,10 +196,8 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
             Plotly.newPlot('chart', data, layout, {scrollZoom: true, autosize: false,
                 legend: {yanchor: 'auto', orientation: 'h', x: 0, y: -1, traceorder: 'normal', itemsizing: 'trace', xanchor: 'left', valign: 'middle'}, displaylogo: false, responsive: true, margin:{autoexpand: true}})
         }
-
-    });        let gd = document.getElementById('chart')
-console.log('gd.data ', gd)
-
+    });        
+    let gd = document.getElementById('chart')
 });
 
 // Список выбранных тегов для отправки в influx
@@ -199,7 +208,9 @@ $(document).on('click', '#continue', function () {             // по клик�
 // скрипт памяти выбранных тегов при смене группы(чтобы не терялись при возврате к списку)
 $(document).on('click', '.checkboxes', function () {
     const chId = this.id
+    console.log('chid ', chId)
     const value = document.getElementById(chId).value
+    console.log('value ', value)
 
     if (document.getElementById(chId).checked) {
         chBoxObjSelectList[chId] = value
@@ -239,70 +250,3 @@ function tagsListForInfluxGenerator() {
     }
     $('#hiddenInput').val(chBoxesChecked);      // скрытый input, содержимое готорого отправляется ajax-ом в influx
 }
-
-
-
-
-// var ctx = document.getElementById('myChart');
-
-// var myChart = new Chart(ctx, {
-//     type: 'line',
-//     data: {
-//         datasets: [
-//             {
-//             data: [20, 50, 100, 75, 25, 0],
-//             label: 'Left dataset',
-
-//             // This binds the dataset to the left y axis
-//             yAxisID: 'left-y-axis'
-//         },
-//         {
-//             data: [0.1, 0.5, 1.0, 2.0, 1.5, 0],
-//             label: 'Right dataset',
-
-//             // This binds the dataset to the right y axis
-//             yAxisID: 'right-y-axis'
-//         },
-//         {
-//             data: [10, 15, 10, 22, 35, 20],
-//             label: 'Right dataset2222222',
-
-//             // This binds the dataset to the right y axis
-//             yAxisID: 'right22-y22-axis22'
-//         },
-//         {
-//             data: [180, 155, 140, 132, 125, 140],
-//             label: 'Right dataset55555',
-
-//             // This binds the dataset to the right y axis
-//             yAxisID: 'right55-y55-axis55'
-//         }
-//     ],
-//         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
-//     },
-//     options: {
-//         scales: {
-//             yAxes: [{
-//                 id: 'left-y-axis',
-//                 type: 'linear',
-//                 position: 'left'
-//             },
-//             {
-//                 id: 'right-y-axis',
-//                 type: 'linear',
-//                 position: 'right'
-//             },
-//             {
-//                 id: 'right22-y22-axis22',
-//                 type: 'linear',
-//                 position: 'right'
-//             },
-//             {
-//                 id: 'right55-y55-axis55',
-//                 type: 'linear',
-//                 position: 'right'
-//             }
-//         ]
-//         }
-//     }
-// });

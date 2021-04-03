@@ -84,6 +84,7 @@ def group_prepare(request):
         tags_comments_list = {}
         for e in Tags.objects.filter(group=Group.objects.get(name_group=data.get('groupList'))):
             tags_comments_list[e.name_tag] = e.comment, e.data_type
+            print(e)
         data = tags_comments_list
         return JsonResponse(data)
 
@@ -93,6 +94,7 @@ def tags_influx_prepare(request):
 
     if request.method == 'POST':
         influx_data = request.POST
+        print('influx_data ', influx_data)
         influx_query_tags = influx_data.get('list')
         print(influx_query_tags)
         list_influx_query_tags = influx_query_tags.split(',')

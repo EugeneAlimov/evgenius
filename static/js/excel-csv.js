@@ -38,6 +38,8 @@ function handleFile(e) {
         let i = 1
         let sheetArr = []
             const D2cell = (worksheet['D2'] ? worksheet['D2'].v : undefined)
+        // Не корректная работа функции при парсинге с наборами тегов одновременно из DB и таблиц тегов
+        // нужно объединить циклы в один
             if (D2cell.includes('%')) {
                 while (i <= listRange) {
                     let A_X_Cell = worksheet[`A${i}`]
@@ -46,10 +48,15 @@ function handleFile(e) {
                     }
                     let cellArr = []
                     let D_X_Cell = worksheet[`D${i}`]
+                    let C_X_Cell = worksheet[`C${i}`]
                     let D_X_Value = (D_X_Cell ? D_X_Cell.v : undefined)
-                    let A_X_Value = (A_X_Cell ? A_X_Cell.v : undefined)
+                    let B_Cell_CSV = (A_X_Cell ? A_X_Cell.v : undefined)
                     let A_Cell_CSV = D_X_Value.slice(1)
-                    let B_Cell_CSV = A_X_Value
+                    let C_X_Value = (C_X_Cell ? C_X_Cell.v : undefined)
+                    if (C_X_Value.includes('Timer')) {
+                        A_Cell_CSV = 'MD' + A_Cell_CSV.slice(1)
+                    }
+                    console.log(A_Cell_CSV);
                     cellArr.push(A_Cell_CSV, B_Cell_CSV)
                     sheetArr.push(cellArr)
                     ++i
@@ -63,38 +70,44 @@ function handleFile(e) {
                     let cellArr = []
                     let cell = (worksheet[`A${i}`] ? worksheet[`A${i}`].v : undefined)
                     const arrException = ['InOut', 'Output','Struct', 'Static']
+                    const datatypeTimers = ['Time', 'IEC_TIMER', 'TON_TIME', 'TOF_TIME']
                     if (!arrException.includes(cell)) {
                             let A_X_Cell = worksheet[`A${i}`]
                             let B_X_Cell = worksheet[`B${i}`]
                             let C_X_Cell = worksheet[`C${i}`]
                             let D_X_Cell = worksheet[`D${i}`]
+                            let E_X_Cell = worksheet[`E${i}`]
                             let A_X_Value = (A_X_Cell ? A_X_Cell.v : undefined)
                             let B_X_Value = (B_X_Cell ? B_X_Cell.v : undefined)
                             let C_X_Value = (C_X_Cell ? C_X_Cell.v : undefined)
                             C_X_Value = String(C_X_Value)
                             let D_X_Value = (D_X_Cell ? D_X_Cell.v : undefined)
+                            let E_X_Value = (E_X_Cell ? E_X_Cell.v : undefined)
                             let dataType = ''
                             if (B_X_Value === 'Bool') {
-                            dataType = 'X'
-                            if (!C_X_Value.includes('.')) {C_X_Value = C_X_Value + '.0'}
-                                // else {C_X_Value = C_X_Value + '.0'}
+                                dataType = 'X'
+                                if (!C_X_Value.includes('.')) {C_X_Value = C_X_Value + '.0'}
                             } else  if (B_X_Value === 'Int') {
                                 dataType = 'DI'
                             } else  if (B_X_Value === 'Real') {
                                 dataType = 'R'
-                            } else  if (B_X_Value === 'IEC_TIMER' || 'TON_TIME' || 'TOF_TIME') {
+                            } else  if (!datatypeTimers.includes(B_X_Value)) {
                                 dataType = 'DW'
                             }
+                            if (!dataType.includes('X')) {
+                                if (C_X_Value.includes('.0')) {
+                                    C_X_Value = C_X_Value.slice(0, C_X_Value.length - 2)
+                                }
+                            }
+                            console.log(dataType, C_X_Value)
 
                         let A_Cell_CSV = `${D_X_Value},${dataType}${C_X_Value}`
-                        let B_Cell_CSV = A_X_Value
+                        let B_Cell_CSV = `${A_X_Value} - ${E_X_Value}`
 
                         cellArr.push(A_Cell_CSV, B_Cell_CSV)
                         sheetArr.push(cellArr)
-
                     }
                 }
-
                 let CSV_sheet = XLSX.utils.aoa_to_sheet(sheetArr)
                 XLSX.utils.sheet_to_csv(CSV_sheet)
                 XLSX.utils.book_append_sheet(CSV_book, CSV_sheet)
