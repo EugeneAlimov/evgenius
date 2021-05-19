@@ -29,9 +29,9 @@ function handleFile(e) {
         }
         let first_sheet_name = workbook.SheetNames[0]                           // Get Sheet name
 
-        let address_of_cell = ''
+        // let address_of_cell = ''
         let worksheet = workbook.Sheets[first_sheet_name]                       // Get worksheet
-        let desired_cell = worksheet[address_of_cell]                           // Find desired cell
+        // let desired_cell = worksheet[address_of_cell]                           // Find desired cell
 
         let range = XLSX.utils.decode_range(worksheet['!ref'])                                  // Get the range
         let listRange = (Object.values(range)[1]).r
@@ -70,7 +70,6 @@ function handleFile(e) {
                     let cellArr = []
                     let cell = (worksheet[`A${i}`] ? worksheet[`A${i}`].v : undefined)
                     const arrException = ['InOut', 'Output','Struct', 'Static']
-                    const datatypeTimers = ['Time', 'IEC_TIMER', 'TON_TIME', 'TOF_TIME']
                     if (!arrException.includes(cell)) {
                             let A_X_Cell = worksheet[`A${i}`]
                             let B_X_Cell = worksheet[`B${i}`]
@@ -91,7 +90,7 @@ function handleFile(e) {
                                 dataType = 'DI'
                             } else  if (B_X_Value === 'Real') {
                                 dataType = 'R'
-                            } else  if (!datatypeTimers.includes(B_X_Value)) {
+                            } else  if (B_X_Value === 'Time') {
                                 dataType = 'DW'
                             }
                             if (!dataType.includes('X')) {

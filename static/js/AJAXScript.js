@@ -80,7 +80,6 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
 
     let submitInfluxQueryForm = $('#sqlRequestToInflux');
     let submitInfluxQuery = new FormData(submitInfluxQueryForm[0]);
-
     submitInfluxQuery.append('timeClientUtcValueFrom', timeClientUtcValueFrom);
     submitInfluxQuery.append('timeClientUtcValueTo', timeClientUtcValueTo);
 
@@ -148,15 +147,13 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
             }
             for (let item of myObj) {
                 for (let i in chBoxObjSelectList) {
-                    let itemArr = []
-                    itemArr = item[i]
                     let trace = {}
                     let overlaying = ''
                     let position
                     let positionAnalog = [0.0, 0.025, 0.05, 0.075, 0.1, 0.125] // шаг 0,028
                     let positionBool = [1.0, 0.975, 0.95, 0.925, 0.9, 0.875] // шаг 0,03
                     trace['x'] = item['time']
-                    trace['y'] = item[i]
+                    trace['y'] = item[i.split(' ', 1)]
                     trace['yaxis'] = `y${yaxis}`
                     trace['name'] = i
                     trace['type'] = 'scattergl'
@@ -193,6 +190,7 @@ $(document).on('submit', '#sqlRequestToInflux', function (e) {
             }
 
             data = d
+            console.log(data);
             Plotly.newPlot('chart', data, layout, {scrollZoom: true, autosize: false,
                 legend: {yanchor: 'auto', orientation: 'h', x: 0, y: -1, traceorder: 'normal', itemsizing: 'trace', xanchor: 'left', valign: 'middle'}, displaylogo: false, responsive: true, margin:{autoexpand: true}})
         }
@@ -238,7 +236,7 @@ function tagsListForInfluxGenerator() {
     const chBoxesChecked = []
     listOfSelectedTags.empty();
     for (let i of Object.keys(chBoxObjSelectList)) {     // Генератор списка тегов, отобраных для отображения
-        chBoxesChecked.push(i);
+        chBoxesChecked.push(i.split(' ', 1));
         listOfSelectedTags.append(
             `<li class="tags-chek-box-block">
                     <label class="checkbox-other">
@@ -248,5 +246,6 @@ function tagsListForInfluxGenerator() {
                     </li>`
         );
     }
+    console.log('chBoxesChecked ',chBoxesChecked);
     $('#hiddenInput').val(chBoxesChecked);      // скрытый input, содержимое готорого отправляется ajax-ом в influx
 }

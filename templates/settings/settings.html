@@ -5,10 +5,11 @@
     <meta charset="UTF-8">
     <title>Settings</title>
     <link rel="icon" href="{% static 'img/analytics.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/settings-css.css' %}"/>
     <link rel="stylesheet" href="{% static 'css/navbar-css.css' %}"/>
-    <link rel="stylesheet" href="{% static 'css/reset.min.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.css" integrity="sha512-C7hOmCgGzihKXzyPU/z4nv97W0d9bv4ALuuEbSf6hm93myico9qa0hv4dODThvCsqQUmKmLcJmlpRmCaApr83g==" crossorigin="anonymous" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js" integrity="sha512-hZf9Qhp3rlDJBvAKvmiG+goaaKRZA6LKUO35oK6EsM0/kjPK32Yw7URqrq3Q+Nvbbt8Usss+IekL7CRn83dYmw==" crossorigin="anonymous"></script>
+<!--    <link rel="stylesheet" href="{% static 'css/reset.min.css' %}">-->
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.css" integrity="sha512-C7hOmCgGzihKXzyPU/z4nv97W0d9bv4ALuuEbSf6hm93myico9qa0hv4dODThvCsqQUmKmLcJmlpRmCaApr83g==" crossorigin="anonymous" />-->
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js" integrity="sha512-hZf9Qhp3rlDJBvAKvmiG+goaaKRZA6LKUO35oK6EsM0/kjPK32Yw7URqrq3Q+Nvbbt8Usss+IekL7CRn83dYmw==" crossorigin="anonymous"></script>-->
 
 </head>
 
@@ -81,7 +82,11 @@
 <br>
 <br>
 <br>
-<canvas id="myChart" width="400" height="400"></canvas>
+<div class="containeriner">
+    <div class="card">
+        <canvas id="chart" width="1800" height="700"></canvas>
+    </div>
+</div>
 
 <script type="text/javascript" src="{% static 'js/sheetjs/xlsx.full.min.js' %}"></script>
 
@@ -89,5 +94,6 @@
 <script type="text/javascript" src="{% static 'js/AJAXScript.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/excel-csv.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/editor.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/chart.js' %}"></script>
 </body>
 </html>
